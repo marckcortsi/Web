@@ -98,11 +98,25 @@
         #reloj {
             font-size: 20px;
         }
+        #exportar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #exportar-container label {
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
     <div id="reloj-container">
-        <button onclick="exportarRegistros()">Exportar Registros</button>
+        <div id="exportar-container">
+            <label for="fechaInicio">Fecha de Inicio:</label>
+            <input type="date" id="fechaInicio">
+            <label for="fechaFin">Fecha de Fin:</label>
+            <input type="date" id="fechaFin">
+            <button onclick="exportarRegistros()">Exportar Registros</button>
+        </div>
         <div id="reloj"></div>
     </div>
     <h1>REGISTRO DE PEDIDOS ACTECK</h1>
@@ -270,6 +284,19 @@
         function exportarRegistros() {
             let entregaRegistros = JSON.parse(localStorage.getItem('entrega')) || [];
             let finalizadoRegistros = JSON.parse(localStorage.getItem('finalizado')) || [];
+
+            const fechaInicio = new Date(document.getElementById('fechaInicio').value);
+            const fechaFin = new Date(document.getElementById('fechaFin').value);
+
+            entregaRegistros = entregaRegistros.filter(registro => {
+                const fechaRegistro = new Date(registro.fecha);
+                return fechaRegistro >= fechaInicio && fechaRegistro <= fechaFin;
+            });
+
+            finalizadoRegistros = finalizadoRegistros.filter(registro => {
+                const fechaRegistro = new Date(registro.fecha);
+                return fechaRegistro >= fechaInicio && fechaRegistro <= fechaFin;
+            });
 
             let entregaData = entregaRegistros.map(registro => ({
                 Nombre: registro.nombre,
