@@ -1,120 +1,120 @@
 <!DOCTYPE html>
 <html lang="es">
-<cabeza>
-    <meta conjunto de caracteres="UTF-8">
-    <meta name="viewport" content="ancho=ancho-del-dispositivo, escala-inicial=1.0">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>REGISTRO DE PEDIDOS ACTECK</title>
-    <estilo>
-        cuerpo {
-            familia de fuentes: Arial, sans-serif;
-            color de fondo: #000;
-            color blanco;
-            alinear texto: centro;
-            relleno: 20px;
-            text-transform: mayúsculas;
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            text-transform: uppercase;
         }
         h1 {
-            margen inferior: 20px;
+            margin-bottom: 20px;
         }
         .opciones {
-            pantalla:flexible;
-            justificar-contenido: centro;
-            espacio: 20px;
-            margen inferior: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
         }
-        .registro-formulario {
-            pantalla: ninguna;
-            ancho máximo: 600px;
-            margen: 0 automático;
-            alinear texto: izquierda;
-            relleno: 20px;
-            borde: 1px sólido #555;
-            color de fondo: #222;
+        .registro-form {
+            display: none;
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: left;
+            padding: 20px;
+            border: 1px solid #555;
+            background-color: #222;
         }
-        .registro-form.activo {
-            bloqueo de pantalla;
+        .registro-form.active {
+            display: block;
         }
-        etiqueta {
-            bloqueo de pantalla;
-            margen inferior: 5px;
-            color blanco;
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: white;
         }
-        entrada, área de texto, seleccionar {
-            ancho: 100%;
-            relleno: 5px;
-            margen inferior: 10px;
-            color de fondo: #333;
-            color blanco;
-            borde: ninguno;
+        input, textarea, select {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
         }
-        botón {
-            relleno: 8px 20px;
-            color de fondo: #4CAF50;
-            color blanco;
-            borde: ninguno;
-            cursor: puntero;
-            margen superior: 10px;
-            text-transform: mayúsculas;
+        button {
+            padding: 8px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+            text-transform: uppercase;
         }
-        botón.cancelar {
-            color de fondo: #f44336;
+        button.cancelar {
+            background-color: #f44336;
         }
-        botón:hover {
-            color de fondo: #45a049;
+        button:hover {
+            background-color: #45a049;
         }
-        .mensaje {
+        .message {
             color: #4CAF50;
-            margen superior: 10px;
+            margin-top: 10px;
         }
         .registros {
-            ancho máximo: 600px;
-            margen: 20px automático;
-            alinear texto: izquierda;
-            relleno: 20px;
-            borde: 1px sólido #555;
-            color de fondo: #333;
-            pantalla: ninguna;
+            max-width: 600px;
+            margin: 20px auto;
+            text-align: left;
+            padding: 20px;
+            border: 1px solid #555;
+            background-color: #333;
+            display: none;
         }
-        .registros.activo {
-            bloqueo de pantalla;
+        .registros.active {
+            display: block;
         }
         .registro {
-            margen inferior: 10px;
-            relleno: 10px;
-            borde: 1px sólido #555;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #555;
         }
         .registro.entrega {
-            color de fondo: azul; /* Color azul para registros de entrega */
+            background-color: blue; /* Color azul para registros de entrega */
         }
         .registro.finalizado {
-            color de fondo: verde; /* Color verde para registros finalizados */
+            background-color: green; /* Color verde para registros finalizados */
         }
-        #reloj-contenedor {
-            pantalla:flexible;
-            justificar-contenido: espacio-entre;
-            alinear-elementos: centro;
-            margen inferior: 20px;
+        #reloj-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
         #reloj {
-            tamaño de fuente: 20px;
+            font-size: 20px;
         }
-        #exportar-contenedor {
-            pantalla:flexible;
-            flex-direccion: columna;
-            alinear-elementos: centro;
+        #exportar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        #exportar-contenedor etiqueta {
-            margen inferior: 5px;
+        #exportar-container label {
+            margin-bottom: 5px;
         }
-    </estilo>
-</cabeza>
-<cuerpo>
-    <div id="contenedor-de-reloj">
-        <div id="exportar-contenedor">
-            <label for="fechaInicio">Fecha de inicio:</label>
+    </style>
+</head>
+<body>
+    <div id="reloj-container">
+        <div id="exportar-container">
+            <label for="fechaInicio">Fecha de Inicio:</label>
             <input type="date" id="fechaInicio">
             <label for="fechaFin">Fecha de Fin:</label>
-            <input type="fecha" id="fechaFin">
+            <input type="date" id="fechaFin">
             <button onclick="exportarRegistros()">Exportar Registros</button>
         </div>
         <div id="reloj"></div>
@@ -127,40 +127,40 @@
     </div>
 
     <div id="registroEntrega" class="registro-form">
-        <h2>Registro de entrega de pedidos a paquete</h2>
+        <h2>Registro de entrega de pedidos a empaque</h2>
         <form id="formEntrega">
             <label for="nombreEntrega">Usuario:</label>
-            <input type="text" id="nombreEntrega" requerido>
+            <input type="text" id="nombreEntrega" required>
             <br>
             <label for="pedidoEntrega">GDL:</label>
-            <input type="text" id="pedidoEntrega" requerido>
+            <input type="text" id="pedidoEntrega" required>
             <br>
-            <button type="button" onclick="registrarEntrega()">Registrador Entrega</button>
+            <button type="button" onclick="registrarEntrega()">Registrar Entrega</button>
             <button type="button" class="cancelar" onclick="cancelarRegistro('entrega')">Cancelar</button>
-        </formulario>
+        </form>
         <p id="mensajeEntrega" class="message"></p>
     </div>
 
     <div id="registroFinalizado" class="registro-form">
-        <h2>Registro de finalización de empaque de pedidos</h2>
-        <form id="formularioFinalizado">
+        <h2>Registro de finalizado de empaque de pedidos</h2>
+        <form id="formFinalizado">
             <label for="nombreFinalizado">Usuario:</label>
-            <input type="text" id="nombreFinalizado" requerido>
+            <input type="text" id="nombreFinalizado" required>
             <br>
             <label for="pedidoFinalizado">GDL:</label>
-            <input type="text" id="pedidoFinalizado" requerido>
+            <input type="text" id="pedidoFinalizado" required>
             <br>
-            <label for="estatus">Estado:</label>
-            <select id="estado" requerido>
+            <label for="estatus">Estatus:</label>
+            <select id="estatus" required>
                 <option value="completo">Completo</option>
                 <option value="incidencia">Incidencia</option>
-            </seleccionar>
+            </select>
             <br>
-            <textarea id="observaciones" placeholder="Observaciones (si se aplica)"></textarea>
+            <textarea id="observaciones" placeholder="Observaciones (si aplica)"></textarea>
             <br>
             <button type="button" onclick="registrarFinalizado()">Finalizar</button>
             <button type="button" class="cancelar" onclick="cancelarRegistro('finalizado')">Cancelar</button>
-        </formulario>
+        </form>
         <p id="mensajeFinalizado" class="message"></p>
     </div>
 
@@ -170,86 +170,86 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
-    <guión>
-        función mostrarFormulario(opcion) {
-            documento.getElementById('registroEntrega').classList.remove('activo');
-            document.getElementById('registroFinalizado').classList.remove('activo');
-            documento.getElementById('registros').classList.remove('activo');
+    <script>
+        function mostrarFormulario(opcion) {
+            document.getElementById('registroEntrega').classList.remove('active');
+            document.getElementById('registroFinalizado').classList.remove('active');
+            document.getElementById('registros').classList.remove('active');
 
-            si (opcion === 'entrega') {
-                documento.getElementById('registroEntrega').classList.add('activo');
+            if (opcion === 'entrega') {
+                document.getElementById('registroEntrega').classList.add('active');
             } else if (opcion === 'finalizado') {
-                document.getElementById('registroFinalizado').classList.add('activo');
+                document.getElementById('registroFinalizado').classList.add('active');
             }
         }
 
-        función registrarEntrega() {
+        function registrarEntrega() {
             const nombre = document.getElementById('nombreEntrega').value;
             const pedido = document.getElementById('pedidoEntrega').value;
-            constante timestamp = nueva Fecha().toLocaleString();
+            const timestamp = new Date().toLocaleString();
 
             const registro = {
                 nombre: nombre,
                 pedido: pedido,
-                fecha: marca de tiempo
+                fecha: timestamp
             };
 
-            // Simulación de almacenamiento local (no persistente)
-            deje que registros = JSON.parse(localStorage.getItem('entrega')) || [];
+            // SimulaciÃ³n de almacenamiento local (no persistente)
+            let registros = JSON.parse(localStorage.getItem('entrega')) || [];
             registros.push(registro);
             localStorage.setItem('entrega', JSON.stringify(registros));
 
-            documento.getElementById('formEntrega').reset();
-            document.getElementById('mensajeEntrega').innerText = 'El registro se realizó exitosamente.';
+            document.getElementById('formEntrega').reset();
+            document.getElementById('mensajeEntrega').innerText = 'El registro se realizÃ³ exitosamente.';
             mostrarRegistros();
-            establecerTiempo de espera(() => {
+            setTimeout(() => {
                 document.getElementById('mensajeEntrega').innerText = '';
-                documento.getElementById('registroEntrega').classList.remove('activo');
+                document.getElementById('registroEntrega').classList.remove('active');
             }, 3000);
         }
 
-        función registrarFinalizado() {
+        function registrarFinalizado() {
             const nombre = document.getElementById('nombreFinalizado').value;
             const pedido = document.getElementById('pedidoFinalizado').value;
-            const estatus = document.getElementById('estado').value;
+            const estatus = document.getElementById('estatus').value;
             const observaciones = document.getElementById('observaciones').value;
-            constante timestamp = nueva Fecha().toLocaleString();
+            const timestamp = new Date().toLocaleString();
 
             const registro = {
                 nombre: nombre,
                 pedido: pedido,
-                fecha: marca de tiempo,
+                fecha: timestamp,
                 estatus: estatus,
-                Observaciones: observaciones
+                observaciones: observaciones
             };
 
-            // Simulación de almacenamiento local (no persistente)
-            dejar registros = JSON.parse(localStorage.getItem('finalizado')) || [];
+            // SimulaciÃ³n de almacenamiento local (no persistente)
+            let registros = JSON.parse(localStorage.getItem('finalizado')) || [];
             registros.push(registro);
             localStorage.setItem('finalizado', JSON.stringify(registros));
 
-            documento.getElementById('formularioFinalizado').reset();
-            document.getElementById('mensajeFinalizado').innerText = 'El registro se realizó exitosamente.';
+            document.getElementById('formFinalizado').reset();
+            document.getElementById('mensajeFinalizado').innerText = 'El registro se realizÃ³ exitosamente.';
             mostrarRegistros();
-            establecerTiempo de espera(() => {
+            setTimeout(() => {
                 document.getElementById('mensajeFinalizado').innerText = '';
-                document.getElementById('registroFinalizado').classList.remove('activo');
+                document.getElementById('registroFinalizado').classList.remove('active');
             }, 3000);
         }
 
-        función cancelarRegistro(opcion) {
-            si (opcion === 'entrega') {
-                documento.getElementById('registroEntrega').classList.remove('activo');
+        function cancelarRegistro(opcion) {
+            if (opcion === 'entrega') {
+                document.getElementById('registroEntrega').classList.remove('active');
             } else if (opcion === 'finalizado') {
-                document.getElementById('registroFinalizado').classList.remove('activo');
+                document.getElementById('registroFinalizado').classList.remove('active');
             }
         }
 
-        función mostrarRegistros() {
-            deja entregaRegistros = JSON.parse(localStorage.getItem('entrega')) || [];
-            deje que finalizadoRegistros = JSON.parse(localStorage.getItem('finalizado')) || [];
+        function mostrarRegistros() {
+            let entregaRegistros = JSON.parse(localStorage.getItem('entrega')) || [];
+            let finalizadoRegistros = JSON.parse(localStorage.getItem('finalizado')) || [];
 
-            deje listaHTML = '';
+            let listaHTML = '';
             entregaRegistros.forEach(registro => {
                 listaHTML += `<div class="registro entrega">
                                 <p><strong>Nombre:</strong> ${registro.nombre}</p>
@@ -263,17 +263,17 @@
                                 <p><strong>Nombre:</strong> ${registro.nombre}</p>
                                 <p><strong>GDL:</strong> ${registro.pedido}</p>
                                 <p><strong>Fecha:</strong> ${registro.fecha}</p>
-                                <p><strong>Estado:</strong> ${registro.estatus}</p>
+                                <p><strong>Estatus:</strong> ${registro.estatus}</p>
                                 <p><strong>Observaciones:</strong> ${registro.observaciones}</p>
                              </div>`;
             });
 
-            documento.getElementById('listaRegistros').innerHTML = listaHTML;
-            documento.getElementById('registros').classList.add('activo');
+            document.getElementById('listaRegistros').innerHTML = listaHTML;
+            document.getElementById('registros').classList.add('active');
         }
 
-        función actualizarReloj() {
-            const ahora = nueva Fecha();
+        function actualizarReloj() {
+            const now = new Date();
             const horas = String(now.getHours()).padStart(2, '0');
             const minutos = String(now.getMinutes()).padStart(2, '0');
             const segundos = String(now.getSeconds()).padStart(2, '0');
@@ -281,53 +281,53 @@
             document.getElementById('reloj').innerText = tiempo;
         }
 
-        función exportarRegistros() {
-            deja entregaRegistros = JSON.parse(localStorage.getItem('entrega')) || [];
-            deje que finalizadoRegistros = JSON.parse(localStorage.getItem('finalizado')) || [];
+        function exportarRegistros() {
+            let entregaRegistros = JSON.parse(localStorage.getItem('entrega')) || [];
+            let finalizadoRegistros = JSON.parse(localStorage.getItem('finalizado')) || [];
 
             const fechaInicio = new Date(document.getElementById('fechaInicio').value);
             const fechaFin = new Date(document.getElementById('fechaFin').value);
 
             entregaRegistros = entregaRegistros.filter(registro => {
                 const fechaRegistro = new Date(registro.fecha);
-                devolver fechaRegistro >= fechaInicio && fechaRegistro <= fechaFin;
+                return fechaRegistro >= fechaInicio && fechaRegistro <= fechaFin;
             });
 
             finalizadoRegistros = finalizadoRegistros.filter(registro => {
                 const fechaRegistro = new Date(registro.fecha);
-                devolver fechaRegistro >= fechaInicio && fechaRegistro <= fechaFin;
+                return fechaRegistro >= fechaInicio && fechaRegistro <= fechaFin;
             });
 
-            deja que entregaData = entregaRegistros.map(registro => ({
+            let entregaData = entregaRegistros.map(registro => ({
                 Nombre: registro.nombre,
                 'GDL': registro.pedido,
                 Fecha: registro.fecha
             }));
 
-            deje que finalizadoData = finalizadoRegistros.map(registro => ({
+            let finalizadoData = finalizadoRegistros.map(registro => ({
                 Nombre: registro.nombre,
                 'GDL': registro.pedido,
                 Fecha: registro.fecha,
-                Estado: registro.estado,
+                Estatus: registro.estatus,
                 Observaciones: registro.observaciones
             }));
 
-            sea ​​wb = XLSX.utils.book_new();
+            let wb = XLSX.utils.book_new();
 
-            deje que wsEntrega = XLSX.utils.json_to_sheet(entregaData);
+            let wsEntrega = XLSX.utils.json_to_sheet(entregaData);
             XLSX.utils.book_append_sheet(wb, wsEntrega, 'Registros de Entrega');
 
-            dejar wsFinalizado = XLSX.utils.json_to_sheet(finalizadoData);
+            let wsFinalizado = XLSX.utils.json_to_sheet(finalizadoData);
             XLSX.utils.book_append_sheet(wb, wsFinalizado, 'Registros de Finalizado');
 
             XLSX.writeFile(wb, 'registros.xlsx');
         }
 
-        // Mostrar registros al cargar la página
-        ventana.onload = función() {
+        // Mostrar registros al cargar la pÃ¡gina
+        window.onload = function() {
             mostrarRegistros();
             setInterval(actualizarReloj, 1000);
         };
     </script>
-</cuerpo>
+</body>
 </html>
