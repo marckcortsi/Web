@@ -108,6 +108,9 @@
         #busquedaPedidoContainer input {
             margin-bottom: 10px;
         }
+        button.borrar-filtro {
+            background-color: #f44336;
+        }
     </style>
 </head>
 <body>
@@ -171,7 +174,10 @@
         <div id="busquedaPedidoContainer">
             <label for="pedidoBusqueda">Buscar por Pedido (GDL):</label>
             <input type="text" id="pedidoBusqueda">
-            <button onclick="buscarPorPedido()">Aplicar Filtro</button>
+            <div>
+                <button onclick="buscarPorPedido()">Aplicar Filtro</button>
+                <button class="borrar-filtro" onclick="borrarFiltro()">Borrar Filtro</button>
+            </div>
             <button onclick="exportarRegistros()">Exportar Registros</button>
             <button onclick="volverAlPrincipal()">REGRESAR</button>
         </div>
@@ -332,6 +338,11 @@
             });
 
             document.getElementById('listaRegistros').innerHTML = listaHTML;
+        }
+
+        function borrarFiltro() {
+            document.getElementById('pedidoBusqueda').value = '';
+            mostrarRegistros();
         }
 
         function calcularTiempoTotal(fechaInicio, fechaFin) {
