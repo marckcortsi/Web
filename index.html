@@ -299,14 +299,14 @@
         }
 
         function buscarPorPedido() {
-            const pedidoBusqueda = document.getElementById('pedidoBusqueda').value.trim();
+            const pedidoBusqueda = document.getElementById('pedidoBusqueda').value.trim().toUpperCase();
             if (!pedidoBusqueda) return;
 
             let entregaRegistros = JSON.parse(localStorage.getItem('entrega')) || [];
             let finalizadoRegistros = JSON.parse(localStorage.getItem('finalizado')) || [];
 
-            entregaRegistros = entregaRegistros.filter(registro => registro.pedido.includes(pedidoBusqueda));
-            finalizadoRegistros = finalizadoRegistros.filter(registro => registro.pedido.includes(pedidoBusqueda));
+            entregaRegistros = entregaRegistros.filter(registro => registro.pedido.toUpperCase().includes(pedidoBusqueda));
+            finalizadoRegistros = finalizadoRegistros.filter(registro => registro.pedido.toUpperCase().includes(pedidoBusqueda));
 
             let listaHTML = '';
             entregaRegistros.forEach(registro => {
