@@ -96,16 +96,16 @@
         #reloj {
             font-size: 20px;
         }
-        #filtroFechaContainer {
+        #busquedaPedidoContainer {
             display: flex;
             flex-direction: column;
             align-items: center;
             margin-bottom: 20px;
         }
-        #filtroFechaContainer label {
+        #busquedaPedidoContainer label {
             margin-bottom: 5px;
         }
-        #filtroFechaContainer input {
+        #busquedaPedidoContainer input {
             margin-bottom: 10px;
         }
     </style>
@@ -114,11 +114,7 @@
     <div id="reloj-container">
         <div id="reloj"></div>
     </div>
-    <div>
-        <p style="margin-top:0.05pt; text-align:justify; line-height:12.2pt">
-            <span style="font-family:Calibri; font-size:10pt">ACTECA</span>
-        </p>
-    </div>
+    <h1>REGISTRO DE PEDIDOS ACTECK</h1>
 
     <div id="opciones" class="opciones">
         <button onclick="mostrarFormulario('entrega')">SURTIDO</button>
@@ -172,10 +168,10 @@
 
     <div id="registros" class="registros">
         <h2>Registros Realizados</h2>
-        <div id="filtroFechaContainer">
-            <label for="fechaFiltro">Filtrar por Fecha:</label>
-            <input type="date" id="fechaFiltro">
-            <button onclick="filtrarPorFecha()">Aplicar Filtro</button>
+        <div id="busquedaPedidoContainer">
+            <label for="pedidoBusqueda">Buscar por Pedido (GDL):</label>
+            <input type="text" id="pedidoBusqueda">
+            <button onclick="buscarPorPedido()">Aplicar Filtro</button>
             <button onclick="exportarRegistros()">Exportar Registros</button>
             <button onclick="volverAlPrincipal()">REGRESAR</button>
         </div>
@@ -302,20 +298,15 @@
             document.getElementById('listaRegistros').innerHTML = listaHTML;
         }
 
-        function filtrarPorFecha() {
-            const fechaFiltro = document.getElementById('fechaFiltro').value;
-            if (!fechaFiltro) return;
+        function buscarPorPedido() {
+            const pedidoBusqueda = document.getElementById('pedidoBusqueda').value.trim();
+            if (!pedidoBusqueda) return;
 
             let entregaRegistros = JSON.parse(localStorage.getItem('entrega')) || [];
             let finalizadoRegistros = JSON.parse(localStorage.getItem('finalizado')) || [];
 
-            entregaRegistros = entregaRegistros.filter(registro => {
-                return registro.fechaRegistro.startsWith(fechaFiltro);
-            });
-
-            finalizadoRegistros = finalizadoRegistros.filter(registro => {
-                return registro.fechaRegistro.startsWith(fechaFiltro);
-            });
+            entregaRegistros = entregaRegistros.filter(registro => registro.pedido.includes(pedidoBusqueda));
+            finalizadoRegistros = finalizadoRegistros.filter(registro => registro.pedido.includes(pedidoBusqueda));
 
             let listaHTML = '';
             entregaRegistros.forEach(registro => {
