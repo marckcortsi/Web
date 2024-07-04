@@ -176,7 +176,7 @@
             <input type="date" id="fechaFiltro">
             <button onclick="filtrarPorFecha()">Aplicar Filtro</button>
             <button onclick="exportarRegistros()">Exportar Registros</button>
-            <button onclick="volverAlPrincipal()">Volver al Principal</button>
+            <button onclick="volverAlPrincipal()">REGRESAR</button>
         </div>
         <div id="listaRegistros"></div>
     </div>
@@ -216,7 +216,6 @@
 
             document.getElementById('formEntrega').reset();
             document.getElementById('mensajeEntrega').innerText = 'El registro se realizó exitosamente.';
-            mostrarRegistros();
             setTimeout(() => {
                 document.getElementById('mensajeEntrega').innerText = '';
                 document.getElementById('registroEntrega').classList.remove('active');
@@ -248,7 +247,6 @@
 
             document.getElementById('formFinalizado').reset();
             document.getElementById('mensajeFinalizado').innerText = 'El registro se realizó exitosamente.';
-            mostrarRegistros();
             setTimeout(() => {
                 document.getElementById('mensajeFinalizado').innerText = '';
                 document.getElementById('registroFinalizado').classList.remove('active');
@@ -261,6 +259,11 @@
             } else if (opcion === 'finalizado') {
                 document.getElementById('registroFinalizado').classList.remove('active');
             }
+        }
+
+        function mostrarTodosRegistros() {
+            mostrarRegistros();
+            document.getElementById('registros').classList.add('active');
         }
 
         function mostrarRegistros() {
@@ -291,7 +294,6 @@
             });
 
             document.getElementById('listaRegistros').innerHTML = listaHTML;
-            document.getElementById('registros').classList.add('active');
         }
 
         function filtrarPorFecha() {
@@ -390,6 +392,7 @@
 
         function volverAlPrincipal() {
             document.getElementById('registros').classList.remove('active');
+            document.getElementById('listaRegistros').innerHTML = ''; // Limpiar el contenido de registros
         }
 
         function actualizarReloj() {
@@ -404,7 +407,6 @@
 
         // Mostrar registros al cargar la página
         window.onload = function() {
-            mostrarRegistros();
             setInterval(actualizarReloj, 1000);
         };
     </script>
