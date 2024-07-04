@@ -135,6 +135,9 @@
             <label for="pedidoEntrega">GDL:</label>
             <input type="text" id="pedidoEntrega" required>
             <br>
+            <label for="fechaHoraImpresion">Fecha y Hora de Impresión de Documento:</label>
+            <input type="datetime-local" id="fechaHoraImpresion" required>
+            <br>
             <button type="button" onclick="registrarEntrega()">Registrar Entrega</button>
             <button type="button" class="cancelar" onclick="cancelarRegistro('entrega')">Cancelar</button>
         </form>
@@ -149,6 +152,9 @@
             <br>
             <label for="pedidoFinalizado">GDL:</label>
             <input type="text" id="pedidoFinalizado" required>
+            <br>
+            <label for="fechaHoraInicioEmpaque">Fecha y Hora de Inicio de Empaque:</label>
+            <input type="datetime-local" id="fechaHoraInicioEmpaque" required>
             <br>
             <label for="estatus">Estatus:</label>
             <select id="estatus" required>
@@ -186,21 +192,23 @@
         function registrarEntrega() {
             const nombre = document.getElementById('nombreEntrega').value;
             const pedido = document.getElementById('pedidoEntrega').value;
+            const fechaHoraImpresion = document.getElementById('fechaHoraImpresion').value;
             const timestamp = new Date().toLocaleString();
 
             const registro = {
                 nombre: nombre,
                 pedido: pedido,
+                fechaHoraImpresion: fechaHoraImpresion,
                 fecha: timestamp
             };
 
-            // SimulaciÃ³n de almacenamiento local (no persistente)
+            // Simulación de almacenamiento local (no persistente)
             let registros = JSON.parse(localStorage.getItem('entrega')) || [];
             registros.push(registro);
             localStorage.setItem('entrega', JSON.stringify(registros));
 
             document.getElementById('formEntrega').reset();
-            document.getElementById('mensajeEntrega').innerText = 'El registro se realizÃ³ exitosamente.';
+            document.getElementById('mensajeEntrega').innerText = 'El registro se realizó exitosamente.';
             mostrarRegistros();
             setTimeout(() => {
                 document.getElementById('mensajeEntrega').innerText = '';
@@ -211,6 +219,7 @@
         function registrarFinalizado() {
             const nombre = document.getElementById('nombreFinalizado').value;
             const pedido = document.getElementById('pedidoFinalizado').value;
+            const fechaHoraInicioEmpaque = document.getElementById('fechaHoraInicioEmpaque').value;
             const estatus = document.getElementById('estatus').value;
             const observaciones = document.getElementById('observaciones').value;
             const timestamp = new Date().toLocaleString();
@@ -218,18 +227,19 @@
             const registro = {
                 nombre: nombre,
                 pedido: pedido,
+                fechaHoraInicioEmpaque: fechaHoraInicioEmpaque,
                 fecha: timestamp,
                 estatus: estatus,
                 observaciones: observaciones
             };
 
-            // SimulaciÃ³n de almacenamiento local (no persistente)
+            // Simulación de almacenamiento local (no persistente)
             let registros = JSON.parse(localStorage.getItem('finalizado')) || [];
             registros.push(registro);
             localStorage.setItem('finalizado', JSON.stringify(registros));
 
             document.getElementById('formFinalizado').reset();
-            document.getElementById('mensajeFinalizado').innerText = 'El registro se realizÃ³ exitosamente.';
+            document.getElementById('mensajeFinalizado').innerText = 'El registro se realizó exitosamente.';
             mostrarRegistros();
             setTimeout(() => {
                 document.getElementById('mensajeFinalizado').innerText = '';
@@ -254,6 +264,7 @@
                 listaHTML += `<div class="registro entrega">
                                 <p><strong>Nombre:</strong> ${registro.nombre}</p>
                                 <p><strong>GDL:</strong> ${registro.pedido}</p>
+                                <p><strong>Fecha y Hora de Impresión:</strong> ${registro.fechaHoraImpresion}</p>
                                 <p><strong>Fecha:</strong> ${registro.fecha}</p>
                              </div>`;
             });
@@ -262,6 +273,7 @@
                 listaHTML += `<div class="registro finalizado">
                                 <p><strong>Nombre:</strong> ${registro.nombre}</p>
                                 <p><strong>GDL:</strong> ${registro.pedido}</p>
+                                <p><strong>Fecha y Hora de Inicio de Empaque:</strong> ${registro.fechaHoraInicioEmpaque}</p>
                                 <p><strong>Fecha:</strong> ${registro.fecha}</p>
                                 <p><strong>Estatus:</strong> ${registro.estatus}</p>
                                 <p><strong>Observaciones:</strong> ${registro.observaciones}</p>
@@ -301,12 +313,14 @@
             let entregaData = entregaRegistros.map(registro => ({
                 Nombre: registro.nombre,
                 'GDL': registro.pedido,
+                'Fecha y Hora de Impresión': registro.fechaHoraImpresion,
                 Fecha: registro.fecha
             }));
 
             let finalizadoData = finalizadoRegistros.map(registro => ({
                 Nombre: registro.nombre,
                 'GDL': registro.pedido,
+                'Fecha y Hora de Inicio de Empaque': registro.fechaHoraInicioEmpaque,
                 Fecha: registro.fecha,
                 Estatus: registro.estatus,
                 Observaciones: registro.observaciones
@@ -323,7 +337,7 @@
             XLSX.writeFile(wb, 'registros.xlsx');
         }
 
-        // Mostrar registros al cargar la pÃ¡gina
+        // Mostrar registros al cargar la página
         window.onload = function() {
             mostrarRegistros();
             setInterval(actualizarReloj, 1000);
