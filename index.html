@@ -119,10 +119,10 @@
     </div>
     <h1>REGISTRO DE PEDIDOS ACTECK</h1>
 
-    <div class="opciones">
+    <div id="opciones" class="opciones">
         <button onclick="mostrarFormulario('entrega')">SURTIDO</button>
         <button onclick="mostrarFormulario('finalizado')">EMPAQUE</button>
-        <button onclick="mostrarTodosRegistros()">Ver Todos los Registros</button>
+        <button onclick="mostrarTodosRegistros()">REGISTROS</button>
     </div>
 
     <div id="registroEntrega" class="registro-form">
@@ -187,6 +187,7 @@
             document.getElementById('registroEntrega').classList.remove('active');
             document.getElementById('registroFinalizado').classList.remove('active');
             document.getElementById('registros').classList.remove('active');
+            document.getElementById('opciones').style.display = 'none';
 
             if (opcion === 'entrega') {
                 document.getElementById('registroEntrega').classList.add('active');
@@ -219,6 +220,7 @@
             setTimeout(() => {
                 document.getElementById('mensajeEntrega').innerText = '';
                 document.getElementById('registroEntrega').classList.remove('active');
+                document.getElementById('opciones').style.display = 'flex'; // Mostrar opciones al finalizar registro
             }, 3000);
         }
 
@@ -250,6 +252,7 @@
             setTimeout(() => {
                 document.getElementById('mensajeFinalizado').innerText = '';
                 document.getElementById('registroFinalizado').classList.remove('active');
+                document.getElementById('opciones').style.display = 'flex'; // Mostrar opciones al finalizar registro
             }, 3000);
         }
 
@@ -259,11 +262,13 @@
             } else if (opcion === 'finalizado') {
                 document.getElementById('registroFinalizado').classList.remove('active');
             }
+            document.getElementById('opciones').style.display = 'flex'; // Mostrar opciones al cancelar registro
         }
 
         function mostrarTodosRegistros() {
             mostrarRegistros();
             document.getElementById('registros').classList.add('active');
+            document.getElementById('opciones').style.display = 'none';
         }
 
         function mostrarRegistros() {
@@ -393,6 +398,7 @@
         function volverAlPrincipal() {
             document.getElementById('registros').classList.remove('active');
             document.getElementById('listaRegistros').innerHTML = ''; // Limpiar el contenido de registros
+            document.getElementById('opciones').style.display = 'flex'; // Mostrar opciones al regresar
         }
 
         function actualizarReloj() {
