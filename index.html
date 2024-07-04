@@ -112,9 +112,9 @@
     <div id="reloj-container">
         <div id="exportar-container">
             <label for="fechaInicio">Fecha de Inicio:</label>
-            <input type="date" id="fechaInicio">
+            <input type="date" id="fechaInicio" onchange="mostrarRegistros()">
             <label for="fechaFin">Fecha de Fin:</label>
-            <input type="date" id="fechaFin">
+            <input type="date" id="fechaFin" onchange="mostrarRegistros()">
             <button onclick="exportarRegistros()">Exportar Registros</button>
         </div>
         <div id="reloj"></div>
@@ -259,6 +259,20 @@
             let entregaRegistros = JSON.parse(localStorage.getItem('entrega')) || [];
             let finalizadoRegistros = JSON.parse(localStorage.getItem('finalizado')) || [];
 
+            const fechaInicio = new Date(document.getElementById('fechaInicio').value);
+            const fechaFin = new Date(document.getElementById('fechaFin').value);
+
+            // Filtrar registros por rango de fechas
+            entregaRegistros = entregaRegistros.filter(registro => {
+                const fechaRegistro = new Date(registro.fecha);
+                return fechaRegistro >= fechaInicio && fechaRegistro <= fechaFin;
+            });
+
+            finalizadoRegistros = finalizadoRegistros.filter(registro => {
+                const fechaRegistro = new Date(registro.fecha);
+                return fechaRegistro >= fechaInicio && fechaRegistro <= fechaFin;
+            });
+
             let listaHTML = '';
             entregaRegistros.forEach(registro => {
                 listaHTML += `<div class="registro entrega">
@@ -300,6 +314,7 @@
             const fechaInicio = new Date(document.getElementById('fechaInicio').value);
             const fechaFin = new Date(document.getElementById('fechaFin').value);
 
+            // Filtrar registros por rango de fechas
             entregaRegistros = entregaRegistros.filter(registro => {
                 const fechaRegistro = new Date(registro.fecha);
                 return fechaRegistro >= fechaInicio && fechaRegistro <= fechaFin;
