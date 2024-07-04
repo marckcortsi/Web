@@ -26,7 +26,7 @@
             display: none;
             max-width: 600px;
             margin: 0 auto;
-            text-align: left;
+            text-align: center;
             padding: 20px;
             border: 1px solid #555;
             background-color: #222;
@@ -46,6 +46,7 @@
             background-color: #333;
             color: white;
             border: none;
+            text-align: center;
         }
         button {
             padding: 8px 20px;
@@ -69,7 +70,7 @@
         .registros {
             max-width: 600px;
             margin: 20px auto;
-            text-align: left;
+            text-align: center;
             padding: 20px;
             border: 1px solid #555;
             background-color: #333;
@@ -106,6 +107,9 @@
         }
         #filtroFechaContainer label {
             margin-bottom: 5px;
+        }
+        #filtroFechaContainer input {
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -169,7 +173,8 @@
         <h2>Registros Realizados</h2>
         <div id="filtroFechaContainer">
             <label for="fechaFiltro">Filtrar por Fecha:</label>
-            <input type="date" id="fechaFiltro" onchange="filtrarPorFecha()">
+            <input type="date" id="fechaFiltro">
+            <button onclick="filtrarPorFecha()">Aplicar Filtro</button>
             <button onclick="exportarRegistros()">Exportar Registros</button>
             <button onclick="volverAlPrincipal()">Volver al Principal</button>
         </div>
