@@ -354,28 +354,34 @@
             }).format(date);
         }
 
-        function exportarRegistros() {
-            const tipos = ['entrega', 'finalizado'];
-            let wb = XLSX.utils.book_new();
+        function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
-            tipos.forEach(tipo => {
-                const registros = JSON.parse(localStorage.getItem(tipo)) || [];
-                const data = registros.map(registro => {
-                    const commonData = {
-                        Nombre: registro.nombre,
-                        GDL: registro.pedido,
-                        'Fecha y Hora': registro.fechaHora,
-                        'Fecha del Registro': registro.fechaRegistro,
-                        'Tiempo Total': registro.tiempoTotal
-                    };
-                    return tipo === 'finalizado' ? { ...commonData, Estatus: registro.estatus, Observaciones: registro.observaciones } : commonData;
-                });
-                const ws = XLSX.utils.json_to_sheet(data);
-                XLSX.utils.book_append_sheet(wb, ws, `Registros de ${capitalize(tipo)}`);
-            });
+function exportarRegistros() {
+    const tipos = ['entrega', 'finalizado'];
+    let wb = XLSX.utils.book_new();
 
-            XLSX.writeFile(wb, 'registros.xlsx');
-        }
+    tipos.forEach(tipo => {
+        const registros = JSON.parse(localStorage.getItem(tipo)) || [];
+        const data = registros.map(registro => {
+            const [hours, minutes] = registro.tiempoTotal.match(/\d+/g); // Extraer horas y minutos del tiempo total
+            const commonData = {
+                Nombre: registro.nombre,
+                GDL: registro.pedido,
+                'Fecha y Hora': registro.fechaHora,
+                'Fecha del Registro': registro.fechaRegistro,
+                'Horas': hours,
+                'Minutos': minutes
+            };
+            return tipo === 'finalizado' ? { ...commonData, Estatus: registro.estatus, Observaciones: registro.observaciones } : commonData;
+        });
+        const ws = XLSX.utils.json_to_sheet(data);
+        XLSX.utils.book_append_sheet(wb, ws, `Registros de ${capitalize(tipo)}`);
+    });
+
+    XLSX.writeFile(wb, 'registros.xlsx');
+}
 
         function volverAlPrincipal() {
             document.getElementById('registros').classList.remove('active');
