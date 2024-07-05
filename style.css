@@ -1,0 +1,108 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #000;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    text-transform: uppercase;
+}
+.opciones {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+.registro-form, .registros {
+    display: none;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 20px;
+    border: 1px solid #555;
+    background-color: #222;
+}
+.registro-form.active, .registros.active {
+    display: block;
+}
+label, input, textarea, select, button {
+    display: block;
+    margin: 5px auto;
+    width: 100%;
+    color: white;
+    background-color: #333;
+    border: 1px solid #555;
+    padding: 5px;
+    text-align: center;
+    border-radius: 12px;
+}
+button {
+    cursor: pointer;
+    margin-top: 10px;
+    text-transform: uppercase;
+    border-radius: 12px;
+}
+button:not(.cancelar):not(.borrar-filtro):not(.regresar) {
+    background-color: #4CAF50;
+}
+button:hover:not(.cancelar):not(.borrar-filtro):not(.regresar) {
+    background-color: #45a049;
+}
+.cancelar, .borrar-filtro, .regresar {
+    background-color: #f44336;
+}
+.cancelar:hover, .borrar-filtro:hover, .regresar:hover {
+    background-color: #e53935;
+}
+.message {
+    color: #4CAF50;
+    margin-top: 10px;
+}
+.registro.entrega {
+    background-color: blue;
+}
+.registro.finalizado {
+    background-color: green;
+}
+#reloj-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+#reloj {
+    font-size: 20px;
+}
+#busquedaPedidoContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.alerta {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+}
+.alerta.active {
+    display: flex;
+}
+.alerta-content {
+    background: #222;
+    padding: 20px;
+    border: 1px solid #555;
+    text-align: center;
+    border-radius: 12px;
+}
+.alerta button {
+    background-color: #4CAF50;
+    margin-top: 10px;
+}
+.alerta button:hover {
+    background-color: #45a049;
+}
