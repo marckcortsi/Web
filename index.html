@@ -85,6 +85,34 @@
             align-items: center;
             margin-bottom: 20px;
         }
+        .alerta {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+        .alerta.active {
+            display: flex;
+        }
+        .alerta-content {
+            background: #222;
+            padding: 20px;
+            border: 1px solid #555;
+            text-align: center;
+            border-radius: 12px;
+        }
+        .alerta button {
+            background-color: #4CAF50;
+            margin-top: 10px;
+        }
+        .alerta button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -100,54 +128,76 @@
     </div>
 
     <div id="registroEntrega" class="registro-form">
-        <h2>Registro de entrega de pedidos a empaque</h2>
+        <h2>ENTREGA DE PEDIDOS A EMPAQUE</h2>
         <form id="formEntrega">
-            <label for="nombreEntrega">Usuario:</label>
-            <input type="text" id="nombreEntrega" required>
+            <label for="nombreEntrega">SELECCIONE USUARIO:</label>
+            <select id="nombreEntrega" required>
+                <option value="">SELECCIONE UN USUARIO</option>
+                <option value="ISAC">ISAC</option>
+                <option value="RAFAEL">RAFAEL</option>
+                <option value="ALEJANDRO">ALEJANDRO</option>
+                <option value="CARLOS">CARLOS</option>
+                <option value="ISRRAEL">ISRRAEL</option>
+                <option value="ARTURO">ARTURO</option>
+            </select>
             <label for="pedidoEntrega">GDL:</label>
             <input type="text" id="pedidoEntrega" required>
-            <label for="fechaHoraImpresion">Fecha y Hora de Impresión de Documento:</label>
+            <label for="fechaHoraImpresion">FECHA Y HORA DE IMPRESIÓN DE DOCUMENTO:</label>
             <input type="datetime-local" id="fechaHoraImpresion" required>
-            <button type="button" onclick="registrar('entrega')">Registrar Entrega</button>
-            <button type="button" class="cancelar" onclick="cancelarRegistro()">Cancelar</button>
+            <button type="button" onclick="registrar('entrega')">REGISTRAR ENTREGA</button>
+            <button type="button" class="cancelar" onclick="cancelarRegistro()">CANCELAR</button>
         </form>
         <p id="mensajeEntrega" class="message"></p>
     </div>
 
     <div id="registroFinalizado" class="registro-form">
-        <h2>Registro de finalizado de empaque de pedidos</h2>
+        <h2>REGISTRO DE EMPAQUE</h2>
         <form id="formFinalizado">
-            <label for="nombreFinalizado">Usuario:</label>
-            <input type="text" id="nombreFinalizado" required>
+            <label for="nombreFinalizado">SELECCIONE USUARIO:</label>
+            <select id="nombreFinalizado" required>
+                <option value="">SELECCIONE UN USUARIO</option>
+                <option value="EDGAR">EDGAR</option>
+                <option value="MARCOS">MARCOS</option>
+                <option value="IRVIN">IRVIN</option>
+                <option value="KAREN">KAREN</option>
+                <option value="FRANCISCO">FRANCISCO</option>
+            </select>
             <label for="pedidoFinalizado">GDL:</label>
             <input type="text" id="pedidoFinalizado" required>
-            <label for="fechaHoraInicioEmpaque">Fecha y Hora de Inicio de Empaque:</label>
+            <label for="fechaHoraInicioEmpaque">FECHA Y HORA DE INICIO DE EMPAQUE:</label>
             <input type="datetime-local" id="fechaHoraInicioEmpaque" required>
-            <label for="estatus">Estatus:</label>
+            <label for="estatus">ESTATUS:</label>
             <select id="estatus" required>
-                <option value="completo">Completo</option>
-                <option value="incidencia">Incidencia</option>
+                <option value="COMPLETO">COMPLETO</option>
+                <option value="INCIDENCIA">INCIDENCIA</option>
             </select>
-            <textarea id="observaciones" placeholder="Observaciones (si aplica)"></textarea>
-            <button type="button" onclick="registrar('finalizado')">Finalizar</button>
-            <button type="button" class="cancelar" onclick="cancelarRegistro()">Cancelar</button>
+            <textarea id="observaciones" placeholder="OBSERVACIONES (SI APLICA)"></textarea>
+            <button type="button" onclick="registrar('finalizado')">FINALIZAR</button>
+            <button type="button" class="cancelar" onclick="cancelarRegistro()">CANCELAR</button>
         </form>
         <p id="mensajeFinalizado" class="message"></p>
     </div>
 
     <div id="registros" class="registros">
-        <h2>Registros Realizados</h2>
+        <h2>REGISTROS REALIZADOS</h2>
         <div id="busquedaPedidoContainer">
-            <label for="pedidoBusqueda">Buscar por Pedido (GDL):</label>
+            <label for="pedidoBusqueda">BUSCAR POR PEDIDO (GDL):</label>
             <input type="text" id="pedidoBusqueda">
             <div>
-                <button onclick="buscarPorPedido()">Aplicar Filtro</button>
-                <button class="borrar-filtro" onclick="borrarFiltro()">Borrar Filtro</button>
+                <button onclick="buscarPorPedido()">APLICAR FILTRO</button>
+                <button class="borrar-filtro" onclick="borrarFiltro()">BORRAR FILTRO</button>
             </div>
-            <button onclick="exportarRegistros()">Exportar Registros</button>
+            <button onclick="exportarRegistros()">EXPORTAR REGISTROS</button>
             <button class="regresar" onclick="volverAlPrincipal()">REGRESAR</button>
         </div>
         <div id="listaRegistros"></div>
+    </div>
+
+    <div id="alertaDuplicado" class="alerta">
+        <div class="alerta-content">
+            <p id="alertaMensaje"></p>
+            <button onclick="cerrarAlerta()">ACEPTAR</button>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
@@ -167,10 +217,17 @@
 
         function registrar(opcion) {
             const form = document.getElementById(formIds[opcion]);
-            const nombre = form.querySelector('input[id^="nombre"]').value;
+            const nombre = form.querySelector('select[id^="nombre"]').value;
             const pedido = form.querySelector('input[id^="pedido"]').value;
             const fechaHora = form.querySelector('input[type="datetime-local"]').value;
             const timestamp = new Date();
+
+            // Verificar si el pedido ya ha sido registrado
+            if (verificarDuplicado(opcion, pedido)) {
+                mostrarAlerta(opcion);
+                return;
+            }
+
             const registro = {
                 nombre,
                 pedido,
@@ -190,6 +247,23 @@
 
             form.reset();
             mostrarMensaje(opcion, 'El registro se realizó exitosamente.');
+        }
+
+        function verificarDuplicado(opcion, pedido) {
+            let registros = JSON.parse(localStorage.getItem(opcion)) || [];
+            return registros.some(registro => registro.pedido.toUpperCase() === pedido.toUpperCase());
+        }
+
+        function mostrarAlerta(opcion) {
+            const mensaje = opcion === 'entrega'
+                ? "ADVERTENCIA EL PEDIDO QUE ESTA INGRESANDO YA HA SIDO REGISTRADO CON ANTERIORIDAD, FAVOR DE VALIDAR QUE EL PEDIDO NO HAYA SIDO SURTIDO DOS VECES"
+                : "ADVERTENCIA EL PEDIDO YA HA SIDO REGISTRADO CON ANTERIORIDAD, FAVOR DE VALIDAD NUEVAMENTE EL PEDIDO";
+            document.getElementById('alertaMensaje').innerText = mensaje;
+            document.getElementById('alertaDuplicado').classList.add('active');
+        }
+
+        function cerrarAlerta() {
+            document.getElementById('alertaDuplicado').classList.remove('active');
         }
 
         function cancelarRegistro() {
