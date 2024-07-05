@@ -358,9 +358,17 @@
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 function exportarRegistros() {
     const tipos = ['entrega', 'finalizado'];
     let wb = XLSX.utils.book_new();
+    const registrosEmpaque = JSON.parse(localStorage.getItem('empaque')) || [];
+    const registrosSurtido = JSON.parse(localStorage.getItem('surtido')) || [];
+    const fechaImpresion = new Date();
+    const fechaImpresionISO = fechaImpresion.toISOString();
 
     tipos.forEach(tipo => {
         const registros = JSON.parse(localStorage.getItem(tipo)) || [];
@@ -380,9 +388,37 @@ function exportarRegistros() {
         XLSX.utils.book_append_sheet(wb, ws, `Registros de ${capitalize(tipo)}`);
     });
 
-    XLSX.writeFile(wb, 'registros.xlsx');
+    // Crear la nueva hoja con la información adicional
+    let nuevaHojaData = [['GDL', 'Fecha de Impresión', 'Fecha de Registro de Empaque', 'Usuario de Surtido', 'Usuario de Empaque', 'Tiempo Total']];
+    
+    registrosSurtido.forEach(surtido => {
+        const registroEmpaque = registrosEmpaque.find(empaque => empaque.pedido === surtido.pedido);
+        if (registroEmpaque) {
+            const tiempoTotal = (fechaImpresion - new Date(registroEmpaque.fechaRegistro)) / (1000 * 60 * 60); // tiempo total en horas
+            nuevaHojaData.push([
+                surtido.pedido,
+                fechaImpresionISO,
+                registroEmpaque.fechaRegistro,
+                surtido.usuario,
+                registroEmpaque.usuario,
+                tiempoTotal.toFixed(2) // Redondear a 2 decimales
+            ]);
+        }
+    });
+    
+    const nuevaHoja = XLSX.utils.aoa_to_sheet(nuevaHojaData);
+    XLSX.utils.book_append_sheet(wb, nuevaHoja, 'Resumen GDL');
+    
+    // Formatear la fecha para usar en el nombre del archivo
+    const fechaArchivo = fechaImpresion.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).replace(/\//g, '-');
+    
+    const nombreArchivo = `REPORTE_${fechaArchivo}.xlsx`;
+    XLSX.writeFile(wb, nombreArchivo);
 }
-
         function volverAlPrincipal() {
             document.getElementById('registros').classList.remove('active');
             document.getElementById('listaRegistros').innerHTML = '';
