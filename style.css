@@ -1,83 +1,127 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #000;
-    color: white;
+    font-family: 'Roboto', Arial, sans-serif; /* Fuente de texto */
+    background-color: #121212; /* Fondo oscuro */
+    color: #fff; /* Texto blanco */
     text-align: center;
     padding: 20px;
-    text-transform: uppercase;
 }
+
 .opciones {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 10px; /* Espacio entre botones reducido */
     margin-bottom: 20px;
 }
+
+.opciones button {
+    font-size: 12px; /* Tamaño reducido para botones */
+    padding: 10px 16px; /* Padding ajustado para botones pequeños */
+}
+
 .registro-form, .registros {
     display: none;
     max-width: 600px;
     margin: 0 auto;
     text-align: center;
     padding: 20px;
-    border: 1px solid #555;
-    background-color: #222;
+    border: 2px solid #1da1f2; /* Borde azul de Twitter */
+    background-color: #212121; /* Fondo gris oscuro */
+    box-shadow: 0 0 20px rgba(29, 161, 242, 0.3); /* Sombra azul suave */
+    border-radius: 12px; /* Bordes redondeados */
 }
+
+.registros {
+    margin-top: 20px; /* Espacio entre registros */
+}
+
 .registro-form.active, .registros.active {
     display: block;
 }
+
 label, input, textarea, select, button {
     display: block;
-    margin: 5px auto;
-    width: 100%;
-    color: white;
-    background-color: #333;
-    border: 1px solid #555;
-    padding: 5px;
+    margin: 10px auto;
+    width: calc(100% - 20px);
+    color: #fff; /* Texto blanco */
+    background-color: #333; /* Fondo gris más oscuro */
+    border: 1px solid #1da1f2; /* Borde azul de Twitter */
+    padding: 12px;
     text-align: center;
-    border-radius: 12px;
+    border-radius: 8px; /* Bordes suaves */
+    font-size: 14px; /* Tamaño de fuente */
+    box-shadow: 0 0 10px rgba(29, 161, 242, 0.3); /* Sombra azul suave */
 }
+
 button {
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 20px;
     text-transform: uppercase;
-    border-radius: 12px;
+    border-radius: 8px; /* Bordes suaves */
+    background-color: #1da1f2; /* Azul de Twitter */
+    color: #fff; /* Texto blanco */
+    border: none;
+    padding: 14px 24px;
+    transition: background-color 0.3s ease; /* Transición para color de fondo */
+    box-shadow: 0 4px 6px rgba(29, 161, 242, 0.3); /* Sombra azul suave */
 }
-button:not(.cancelar):not(.borrar-filtro):not(.regresar) {
-    background-color: #4CAF50;
+
+button:hover {
+    background-color: #0d8af4; /* Azul de Twitter más oscuro al pasar el mouse */
 }
-button:hover:not(.cancelar):not(.borrar-filtro):not(.regresar) {
-    background-color: #45a049;
-}
+
 .cancelar, .borrar-filtro, .regresar {
-    background-color: #f44336;
+    background-color: #e0245e; /* Rosa */
 }
+
 .cancelar:hover, .borrar-filtro:hover, .regresar:hover {
-    background-color: #e53935;
+    background-color: #c81e4f; /* Rosa más oscuro al pasar el mouse */
 }
+
 .message {
-    color: #4CAF50;
-    margin-top: 10px;
+    color: #17bf63; /* Verde */
+    margin-top: 20px;
 }
+
 .registro.entrega {
-    background-color: blue;
+    background-color: rgba(0, 0, 0, 0.8); /* Fondo negro transparente */
+    border: 2px solid #000; /* Borde negro */
+    border-radius: 12px; /* Bordes redondeados */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Sombra negra */
+    margin-bottom: 20px; /* Espacio entre registros */
 }
+
 .registro.finalizado {
-    background-color: green;
+    background-color: rgba(0, 0, 0, 0.8); /* Fondo negro transparente */
+    border: 2px solid #000; /* Borde negro */
+    border-radius: 12px; /* Bordes redondeados */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Sombra negra */
+    margin-bottom: 20px; /* Espacio entre registros */
 }
+
 #reloj-container {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
+    position: relative;
 }
+
 #reloj {
-    font-size: 20px;
+    font-size: 28px; /* Tamaño del reloj */
+    color: #1da1f2; /* Azul de Twitter */
+    background-color: #121212; /* Fondo oscuro */
+    padding: 10px 20px;
+    border-radius: 8px; /* Bordes suaves */
+    box-shadow: 0 0 10px rgba(29, 161, 242, 0.3); /* Sombra azul suave */
 }
+
 #busquedaPedidoContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-bottom: 20px;
 }
+
 .alerta {
     display: none;
     position: fixed;
@@ -85,24 +129,34 @@ button:hover:not(.cancelar):not(.borrar-filtro):not(.regresar) {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.8); /* Fondo semitransparente oscuro */
     justify-content: center;
     align-items: center;
+    transition: opacity 0.3s ease; /* Transición para opacidad */
+    opacity: 0; /* Oculto por defecto */
 }
+
 .alerta.active {
     display: flex;
+    opacity: 1; /* Visible cuando activo */
 }
+
 .alerta-content {
-    background: #222;
+    background: #333; /* Fondo gris oscuro */
     padding: 20px;
-    border: 1px solid #555;
+    border: 1px solid #1da1f2; /* Borde azul de Twitter */
     text-align: center;
-    border-radius: 12px;
+    border-radius: 8px; /* Bordes suaves */
+    box-shadow: 0 0 10px rgba(29, 161, 242, 0.3); /* Sombra azul suave */
 }
+
 .alerta button {
-    background-color: #4CAF50;
-    margin-top: 10px;
+    background-color: #1da1f2; /* Azul de Twitter */
+    margin-top: 20px;
+    padding: 12px 20px;
+    border-radius: 8px; /* Bordes suaves */
 }
+
 .alerta button:hover {
-    background-color: #45a049;
+    background-color: #0d8af4; /* Azul de Twitter más oscuro al pasar el mouse */
 }
