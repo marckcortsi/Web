@@ -1,161 +1,167 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #000;
-    color: white;
+    font-family: 'Roboto', Arial, sans-serif; /* Fuente más moderna */
+    background-color: #111; /* Fondo oscuro */
+    color: #fff; /* Texto blanco */
     text-align: center;
     padding: 20px;
-    text-transform: uppercase;
     margin: 0;
+    position: relative; /* Posición relativa para contenido absoluto */
 }
 
 .opciones {
     display: flex;
     justify-content: center;
     gap: 20px;
-    margin-bottom: 20px;
+    margin-top: 40px; /* Espacio arriba de los apartados */
     flex-wrap: wrap;
+    text-align: center;
 }
 
-.registro-form, .registros {
+.surtido, .empaque, .registro-form, .registros {
     display: none;
     max-width: 600px;
-    margin: 0 auto 20px;
-    text-align: center;
+    margin: 20px auto; /* Espacio entre apartados */
     padding: 20px;
-    border: 1px solid #555;
-    background-color: #222;
+    border: 2px solid #00bcd4; /* Borde azul futurista */
+    background-color: #222; /* Fondo oscuro */
     border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 188, 212, 0.4); /* Sombra futurista */
     transition: all 0.3s ease-in-out;
 }
 
-.registro-form.active, .registros.active {
+.surtido.active, .empaque.active, .registro-form.active, .registros.active {
     display: block;
 }
 
 label, input, textarea, select, button {
     display: block;
-    margin: 5px auto;
-    width: 100%;
-    color: white;
+    margin: 10px auto; /* Espaciado aumentado */
+    width: calc(100% - 20px);
+    color: #fff;
     background-color: #333;
-    border: 1px solid #555;
-    padding: 10px;
+    border: none; /* Sin borde */
+    padding: 12px; /* Aumento del padding */
     text-align: center;
-    border-radius: 12px;
+    border-radius: 25px; /* Bordes redondeados */
     transition: background-color 0.3s ease;
+    font-size: 16px; /* Tamaño de fuente */
 }
 
 button {
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 20px;
     text-transform: uppercase;
-    border-radius: 12px;
+    border-radius: 25px;
+    padding: 15px 40px; /* Aumento del padding */
+    font-size: 14px; /* Tamaño de fuente */
 }
 
 button:not(.cancelar):not(.borrar-filtro):not(.regresar) {
-    background-color: #4CAF50;
+    background-color: #00bcd4; /* Color de botón futurista */
+    color: #fff;
+    border: 2px solid #00bcd4; /* Borde azul futurista */
+    box-shadow: 0 0 15px rgba(0, 188, 212, 0.4); /* Sombra futurista */
 }
 
 button:hover:not(.cancelar):not(.borrar-filtro):not(.regresar) {
-    background-color: #45a049;
+    background-color: #0097a7; /* Color de botón al pasar el mouse */
+    border-color: #0097a7;
 }
 
-.cancelar, .borrar-filtro, .regresar {
-    background-color: #f44336;
+.cancelar {
+    background-color: #f44336; /* Color de botón cancelar */
+    border: none;
+    box-shadow: none;
 }
 
-.cancelar:hover, .borrar-filtro:hover, .regresar:hover {
-    background-color: #e53935;
+.cancelar:hover {
+    background-color: #e53935; /* Color de botón cancelar al pasar el mouse */
 }
 
-.message {
-    color: #4CAF50;
-    margin-top: 10px;
-    font-weight: bold;
+.borrar-filtro {
+    background-color: #ff9800; /* Color de botón borrar filtro */
+    border: none;
+    box-shadow: none;
 }
 
-.message.error {
-    color: #f44336;
+.borrar-filtro:hover {
+    background-color: #fb8c00; /* Color de botón borrar filtro al pasar el mouse */
 }
 
-.registro.entrega {
-    background-color: blue;
+.regresar {
+    background-color: #3f51b5; /* Color de botón regresar */
+    border: none;
+    box-shadow: none;
 }
 
-.registro.finalizado {
-    background-color: green;
+.regresar:hover {
+    background-color: #3949ab; /* Color de botón regresar al pasar el mouse */
 }
 
-#reloj-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.registro {
+    border: 2px solid #00bcd4; /* Borde azul futurista */
+    background-color: #333; /* Fondo oscuro */
+    padding: 20px;
     margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 188, 212, 0.4); /* Sombra futurista */
+    text-align: center;
 }
 
-#reloj {
-    font-size: 20px;
+.registro p {
+    margin: 10px 0; /* Espaciado aumentado */
+    font-size: 16px; /* Tamaño de fuente */
 }
 
-#busquedaPedidoContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.alerta {
+#alertaDuplicado {
     display: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.8);
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    text-align: center;
+    z-index: 100; /* Asegura que esté encima de todo */
+}
+
+.alerta-content {
+    background-color: #444; /* Fondo oscuro */
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 80%;
+    margin: 0 auto;
+    box-shadow: 0 0 20px rgba(0, 188, 212, 0.4); /* Sombra futurista */
 }
 
 .alerta.active {
     display: flex;
 }
 
-.alerta-content {
-    background: #222;
-    padding: 20px;
-    border: 1px solid #555;
-    text-align: center;
-    border-radius: 12px;
-}
-
-.alerta button {
-    background-color: #4CAF50;
+.message {
     margin-top: 10px;
+    font-weight: bold;
 }
 
-.alerta button:hover {
-    background-color: #45a049;
+.message.error {
+    color: #f44336; /* Color de mensaje de error */
 }
 
-/* Transiciones */
-button, .registro-form, .registros, input, textarea, select {
-    transition: all 0.3s ease;
-}
-
-/* Responsivo */
-@media (max-width: 600px) {
-    .registro-form, .registros {
-        width: 100%;
-        padding: 15px;
-    }
-
-    label, input, textarea, select, button {
-        width: 90%;
-        margin: 10px auto;
-    }
-
-    .opciones {
-        flex-direction: column;
-    }
+#reloj-container {
+    position: absolute;
+    top: 20px; /* Espacio desde la parte superior */
+    left: 50%; /* Centrado horizontal */
+    transform: translateX(-50%); /* Centrado horizontal */
+    background-color: #333; /* Fondo oscuro */
+    color: #fff; /* Texto blanco */
+    padding: 5px 10px; /* Ajuste del padding */
+    border-radius: 6px; /* Bordes redondeados */
+    border: 2px solid #00bcd4; /* Borde azul futurista */
+    font-size: 18px; /* Tamaño de fuente reducido */
+    box-shadow: 0 0 10px rgba(0, 188, 212, 0.4); /* Sombra futurista */
+    z-index: 10; /* Asegura que esté encima del contenido */
+    font-family: 'Digital-7', sans-serif; /* Fuente estilo reloj digital */
 }
