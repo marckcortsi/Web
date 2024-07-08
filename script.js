@@ -153,6 +153,7 @@ function formatDateTime(date) {
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
 function exportarRegistros() {
     const fechaInicio = document.getElementById('fechaInicio').value;
     const fechaFin = document.getElementById('fechaFin').value;
@@ -243,50 +244,9 @@ function formatDate(date) {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
-    return `${year}${month}${day}`;
-}
-
-function formatDate(date) {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${year}${month}${day}`;
-}
-
-function formatDate(date) {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${year}${month}${day}`;
-}
-
-function formatDate(date) {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${year}${month}${day}`;
-}
-
-function formatDate(date) {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${year}${month}${day}`;
-}
-
-function formatDate(date) {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${year}${month}${day}`;
-}
-
-function formatDate(date) {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
     return `${day}-${month}-${year}`;
 }
+
 function volverAlPrincipal() {
     document.getElementById('registros').classList.remove('active');
     document.getElementById('listaRegistros').innerHTML = '';
