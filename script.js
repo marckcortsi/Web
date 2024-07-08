@@ -154,44 +154,124 @@ function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 function exportarRegistros() {
+    const fechaInicio = document.getElementById('fechaInicio').value;
+    const fechaFin = document.getElementById('fechaFin').value;
+
+    if (!fechaInicio || !fechaFin) {
+        alert("Por favor, seleccione un rango de fechas válido.");
+        return;
+    }
+
+    const fechaInicioObj = new Date(fechaInicio);
+    const fechaFinObj = new Date(fechaFin);
+    fechaFinObj.setHours(23, 59, 59, 999); // Asegurarse de incluir todo el día de la fecha final
+
+    console.log('Fecha de inicio seleccionada:', fechaInicioObj);
+    console.log('Fecha de fin seleccionada:', fechaFinObj);
+
     const entregaRegistros = JSON.parse(localStorage.getItem('entrega')) || [];
     const finalizadoRegistros = JSON.parse(localStorage.getItem('finalizado')) || [];
 
+    console.log('Registros de entrega:', entregaRegistros);
+    console.log('Registros finalizados:', finalizadoRegistros);
+
     const wb = XLSX.utils.book_new();
 
-    // Crear hoja para registros de entrega
-    const entregaData = entregaRegistros.map(registro => [
-        registro.pedido,
-        registro.nombre,
-        registro.fechaHora,
-        registro.fechaRegistro,
-        Math.floor(registro.tiempoTotal.split(' ')[0]), // horas
-        Math.floor(registro.tiempoTotal.split(' ')[3])  // minutos
-    ]);
-    entregaData.unshift(['GDL', 'Usuario', 'Fecha de Impresión de Documento', 'Fecha del Registro', 'Horas Transcurridas', 'Minutos Transcurridos']);
-    const entregaWS = XLSX.utils.aoa_to_sheet(entregaData);
-    XLSX.utils.book_append_sheet(wb, entregaWS, 'Registros de Entrega');
+    // Función para filtrar registros por rango de fechas
+    function filtrarRegistrosPorFecha(registros, fechaInicio, fechaFin) {
+        return registros.filter(registro => {
+            const fechaRegistro = new Date(registro.fechaRegistro);
+            return fechaRegistro >= fechaInicio && fechaRegistro <= fechaFin;
+        });
+    }
 
-    // Crear hoja para registros de finalizado
-    const finalizadoData = finalizadoRegistros.map(registro => [
-        registro.pedido,
-        registro.nombre,
-        registro.fechaHora,
-        registro.fechaRegistro,
-        Math.floor(registro.tiempoTotal.split(' ')[0]), // horas
-        Math.floor(registro.tiempoTotal.split(' ')[3]), // minutos
-        registro.estatus, // agregar campo estatus
-        registro.observaciones // agregar campo observaciones
-    ]);
-    finalizadoData.unshift(['GDL', 'Usuario', 'Fecha y Hora de Inicio de Empaque', 'Fecha del Registro', 'Horas Transcurridas', 'Minutos Transcurridos', 'Estatus', 'Observaciones']);
-    const finalizadoWS = XLSX.utils.aoa_to_sheet(finalizadoData);
-    XLSX.utils.book_append_sheet(wb, finalizadoWS, 'Registros Finalizados');
+    // Filtrar registros de entrega por rango de fechas
+    const entregaFiltrados = filtrarRegistrosPorFecha(entregaRegistros, fechaInicioObj, fechaFinObj);
+
+    console.log('Registros de entrega filtrados:', entregaFiltrados);
+
+    if (entregaFiltrados.length > 0) {
+        // Crear hoja para registros de entrega
+        const entregaData = entregaFiltrados.map(registro => [
+            registro.pedido,
+            registro.nombre,
+            registro.fechaHora,
+            registro.fechaRegistro,
+            Math.floor(registro.tiempoTotal.split(' ')[0]), // horas
+            Math.floor(registro.tiempoTotal.split(' ')[3])  // minutos
+        ]);
+        entregaData.unshift(['GDL', 'Usuario', 'Fecha de Impresión de Documento', 'Fecha del Registro', 'Horas Transcurridas', 'Minutos Transcurridos']);
+        const entregaWS = XLSX.utils.aoa_to_sheet(entregaData);
+        XLSX.utils.book_append_sheet(wb, entregaWS, 'Registros de Entrega');
+    }
+
+    // Filtrar registros de finalizado por rango de fechas
+    const finalizadoFiltrados = filtrarRegistrosPorFecha(finalizadoRegistros, fechaInicioObj, fechaFinObj);
+
+    console.log('Registros finalizados filtrados:', finalizadoFiltrados);
+
+    if (finalizadoFiltrados.length > 0) {
+        // Crear hoja para registros de finalizado
+        const finalizadoData = finalizadoFiltrados.map(registro => [
+            registro.pedido,
+            registro.nombre,
+            registro.fechaHora,
+            registro.fechaRegistro,
+            Math.floor(registro.tiempoTotal.split(' ')[0]), // horas
+            Math.floor(registro.tiempoTotal.split(' ')[3]), // minutos
+            registro.estatus, // agregar campo estatus
+            registro.observaciones // agregar campo observaciones
+        ]);
+        finalizadoData.unshift(['GDL', 'Usuario', 'Fecha y Hora de Inicio de Empaque', 'Fecha del Registro', 'Horas Transcurridas', 'Minutos Transcurridos', 'Estatus', 'Observaciones']);
+        const finalizadoWS = XLSX.utils.aoa_to_sheet(finalizadoData);
+        XLSX.utils.book_append_sheet(wb, finalizadoWS, 'Registros Finalizados');
+    }
+
+    if (entregaFiltrados.length === 0 && finalizadoFiltrados.length === 0) {
+        alert("No hay registros dentro del rango de fechas seleccionado.");
+        return;
+    }
 
     // Fecha actual para el nombre del archivo
     const fechaActual = formatDate(new Date());
     const nombreArchivo = `Registros_${fechaActual}.xlsx`;
 
     XLSX.writeFile(wb, nombreArchivo);
+}
+
+function formatDate(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${year}${month}${day}`;
+}
+
+function formatDate(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${year}${month}${day}`;
+}
+
+function formatDate(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${year}${month}${day}`;
+}
+
+function formatDate(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${year}${month}${day}`;
+}
+
+function formatDate(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${year}${month}${day}`;
 }
 
 function formatDate(date) {
