@@ -154,50 +154,59 @@ function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 function exportarRegistros() {
-       const entregaRegistros = JSON.parse(localStorage.getItem('entrega')) || [];
-       const finalizadoRegistros = JSON.parse(localStorage.getItem('finalizado')) || [];
+    const entregaRegistros = JSON.parse(localStorage.getItem('entrega')) || [];
+    const finalizadoRegistros = JSON.parse(localStorage.getItem('finalizado')) || [];
 
-       const wb = XLSX.utils.book_new();
-       
-       // Crear hoja para registros de entrega
-       const entregaData = entregaRegistros.map(registro => [
-           registro.pedido,
-           registro.nombre,
-           registro.fechaHora,
-           registro.fechaRegistro,
-           Math.floor(registro.tiempoTotal.split(' ')[0]), // horas
-           Math.floor(registro.tiempoTotal.split(' ')[3])  // minutos
-       ]);
-       entregaData.unshift(['GDL', 'Usuario', 'Fecha de Impresión de Documento', 'Fecha del Registro', 'Horas Transcurridas', 'Minutos Transcurridos']);
-       const entregaWS = XLSX.utils.aoa_to_sheet(entregaData);
-       XLSX.utils.book_append_sheet(wb, entregaWS, 'Registros de Entrega');
+    const wb = XLSX.utils.book_new();
 
-       // Crear hoja para registros de finalizado
-       const finalizadoData = finalizadoRegistros.map(registro => [
-           registro.pedido,
-           registro.nombre,
-           registro.fechaHora,
-           registro.fechaRegistro,
-           Math.floor(registro.tiempoTotal.split(' ')[0]), // horas
-           Math.floor(registro.tiempoTotal.split(' ')[3])  // minutos
-       ]);
-       finalizadoData.unshift(['GDL', 'Usuario', 'Fecha y Hora de Inicio de Empaque', 'Fecha del Registro', 'Horas Transcurridas', 'Minutos Transcurridos']);
-       const finalizadoWS = XLSX.utils.aoa_to_sheet(finalizadoData);
-       XLSX.utils.book_append_sheet(wb, finalizadoWS, 'Registros Finalizados');
+    // Crear hoja para registros de entrega
+    const entregaData = entregaRegistros.map(registro => [
+        registro.pedido,
+        registro.nombre,
+        registro.fechaHora,
+        registro.fechaRegistro,
+        Math.floor(registro.tiempoTotal.split(' ')[0]), // horas
+        Math.floor(registro.tiempoTotal.split(' ')[3])  // minutos
+    ]);
+    entregaData.unshift(['GDL', 'Usuario', 'Fecha de Impresión de Documento', 'Fecha del Registro', 'Horas Transcurridas', 'Minutos Transcurridos']);
+    const entregaWS = XLSX.utils.aoa_to_sheet(entregaData);
+    XLSX.utils.book_append_sheet(wb, entregaWS, 'Registros de Entrega');
 
-       // Fecha actual para el nombre del archivo
-       const fechaActual = formatDate(new Date());
-       const nombreArchivo = `Registros_${fechaActual}.xlsx`;
+    // Crear hoja para registros de finalizado
+    const finalizadoData = finalizadoRegistros.map(registro => [
+        registro.pedido,
+        registro.nombre,
+        registro.fechaHora,
+        registro.fechaRegistro,
+        Math.floor(registro.tiempoTotal.split(' ')[0]), // horas
+        Math.floor(registro.tiempoTotal.split(' ')[3]), // minutos
+        registro.estatus, // agregar campo estatus
+        registro.observaciones // agregar campo observaciones
+    ]);
+    finalizadoData.unshift(['GDL', 'Usuario', 'Fecha y Hora de Inicio de Empaque', 'Fecha del Registro', 'Horas Transcurridas', 'Minutos Transcurridos', 'Estatus', 'Observaciones']);
+    const finalizadoWS = XLSX.utils.aoa_to_sheet(finalizadoData);
+    XLSX.utils.book_append_sheet(wb, finalizadoWS, 'Registros Finalizados');
 
-       XLSX.writeFile(wb, nombreArchivo);
-   }
+    // Fecha actual para el nombre del archivo
+    const fechaActual = formatDate(new Date());
+    const nombreArchivo = `Registros_${fechaActual}.xlsx`;
 
-   function formatDate(date) {
-       const day = String(date.getDate()).padStart(2, '0');
-       const month = String(date.getMonth() + 1).padStart(2, '0');
-       const year = date.getFullYear();
-       return `${day}-${month}-${year}`;
-   }
+    XLSX.writeFile(wb, nombreArchivo);
+}
+
+function formatDate(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${year}${month}${day}`;
+}
+
+function formatDate(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+}
 function volverAlPrincipal() {
     document.getElementById('registros').classList.remove('active');
     document.getElementById('listaRegistros').innerHTML = '';
