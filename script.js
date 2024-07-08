@@ -153,65 +153,51 @@ function formatDateTime(date) {
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
-
 function exportarRegistros() {
-    const tipos = ['entrega', 'finalizado'];
-    let wb = XLSX.utils.book_new();
+       const entregaRegistros = JSON.parse(localStorage.getItem('entrega')) || [];
+       const finalizadoRegistros = JSON.parse(localStorage.getItem('finalizado')) || [];
 
-    tipos.forEach(tipo => {
-        const registros = JSON.parse(localStorage.getItem(tipo)) || [];
-        const data = registros.map(registro => {
-            const [hours, minutes] = registro.tiempoTotal.match(/\d+/g); // Extraer horas y minutos del tiempo total
-            const commonData = {
-                Nombre: registro.nombre,
-                GDL: registro.pedido,
-                'Fecha y Hora': registro.fechaHora,
-                'Fecha del Registro': registro.fechaRegistro,
-                'Horas': hours,
-                'Minutos': minutes
-            };
-            return tipo === 'finalizado' ? { ...commonData, Estatus: registro.estatus, Observaciones: registro.observaciones } : commonData;
-        });
-        const ws = XLSX.utils.json_to_sheet(data);
-        XLSX.utils.book_append_sheet(wb, ws, `Registros de ${capitalize(tipo)}`);
-    });
+       const wb = XLSX.utils.book_new();
+       
+       // Crear hoja para registros de entrega
+       const entregaData = entregaRegistros.map(registro => [
+           registro.pedido,
+           registro.nombre,
+           registro.fechaHora,
+           registro.fechaRegistro,
+           Math.floor(registro.tiempoTotal.split(' ')[0]), // horas
+           Math.floor(registro.tiempoTotal.split(' ')[3])  // minutos
+       ]);
+       entregaData.unshift(['GDL', 'Usuario', 'Fecha de Impresión de Documento', 'Fecha del Registro', 'Horas Transcurridas', 'Minutos Transcurridos']);
+       const entregaWS = XLSX.utils.aoa_to_sheet(entregaData);
+       XLSX.utils.book_append_sheet(wb, entregaWS, 'Registros de Entrega');
 
-    // Crear la nueva hoja con la información adicional
-    const registrosEmpaque = JSON.parse(localStorage.getItem('empaque')) || [];
-    const registrosSurtido = JSON.parse(localStorage.getItem('surtido')) || [];
-    const fechaImpresion = new Date();
-    const fechaImpresionISO = fechaImpresion.toISOString();
-    let nuevaHojaData = [['GDL', 'Fecha de Impresión', 'Fecha de Registro de Empaque', 'Usuario de Surtido', 'Usuario de Empaque', 'Tiempo Total']];
+       // Crear hoja para registros de finalizado
+       const finalizadoData = finalizadoRegistros.map(registro => [
+           registro.pedido,
+           registro.nombre,
+           registro.fechaHora,
+           registro.fechaRegistro,
+           Math.floor(registro.tiempoTotal.split(' ')[0]), // horas
+           Math.floor(registro.tiempoTotal.split(' ')[3])  // minutos
+       ]);
+       finalizadoData.unshift(['GDL', 'Usuario', 'Fecha y Hora de Inicio de Empaque', 'Fecha del Registro', 'Horas Transcurridas', 'Minutos Transcurridos']);
+       const finalizadoWS = XLSX.utils.aoa_to_sheet(finalizadoData);
+       XLSX.utils.book_append_sheet(wb, finalizadoWS, 'Registros Finalizados');
 
-    registrosSurtido.forEach(surtido => {
-        const registroEmpaque = registrosEmpaque.find(empaque => empaque.pedido === surtido.pedido);
-        if (registroEmpaque) {
-            const tiempoTotal = (fechaImpresion - new Date(registroEmpaque.fechaRegistro)) / (1000 * 60 * 60); // tiempo total en horas
-            nuevaHojaData.push([
-                surtido.pedido,
-                fechaImpresionISO,
-                registroEmpaque.fechaRegistro,
-                surtido.usuario,
-                registroEmpaque.usuario,
-                tiempoTotal.toFixed(2) // Redondear a 2 decimales
-            ]);
-        }
-    });
+       // Fecha actual para el nombre del archivo
+       const fechaActual = formatDate(new Date());
+       const nombreArchivo = `Registros_${fechaActual}.xlsx`;
 
-    const nuevaHoja = XLSX.utils.aoa_to_sheet(nuevaHojaData);
-    XLSX.utils.book_append_sheet(wb, nuevaHoja, 'Resumen GDL');
+       XLSX.writeFile(wb, nombreArchivo);
+   }
 
-    // Formatear la fecha para usar en el nombre del archivo
-    const fechaArchivo = fechaImpresion.toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-    }).replace(/\//g, '-');
-
-    const nombreArchivo = `REPORTE_${fechaArchivo}.xlsx`;
-    XLSX.writeFile(wb, nombreArchivo);
-}
-
+   function formatDate(date) {
+       const day = String(date.getDate()).padStart(2, '0');
+       const month = String(date.getMonth() + 1).padStart(2, '0');
+       const year = date.getFullYear();
+       return `${day}-${month}-${year}`;
+   }
 function volverAlPrincipal() {
     document.getElementById('registros').classList.remove('active');
     document.getElementById('listaRegistros').innerHTML = '';
