@@ -160,3 +160,48 @@ button:hover {
 .alerta button:hover {
     background-color: #0d8af4; /* Azul de Twitter más oscuro al pasar el mouse */
 }
+
+#tablaRegistros {
+    margin: 20px auto;
+    max-width: 800px;
+    text-align: center; /* Centrar el texto */
+}
+
+#tablaRegistros h2 {
+    color: #1da1f2; /* Azul de Twitter */
+    margin-bottom: 10px;
+    text-align: center; /* Centrar el texto */
+}
+
+#tablaRegistros h3 {
+    color: #fff;
+    margin: 20px 0 10px;
+    text-align: center; /* Centrar el texto */
+}
+
+#tablaRegistros table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    text-align: center; /* Centrar el texto */
+}
+
+#tablaRegistros th, #tablaRegistros td {
+    border: 1px solid #1da1f2; /* Borde azul de Twitter */
+    padding: 10px;
+    text-align: center; /* Centrar el texto */
+    vertical-align: middle; /* Centrar verticalmente */
+}
+
+#tablaRegistros th {
+    background-color: #1da1f2; /* Azul de Twitter */
+    color: #fff;
+}
+
+#tablaRegistros td {
+    background-color: #212121; /* Fondo gris oscuro */
+}
+
+.hidden {
+    display: none;
+}
