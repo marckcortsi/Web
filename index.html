@@ -85,6 +85,41 @@
         <div id="listaRegistros"></div>
     </div>
 
+    <!-- Nueva sección para tablas de registros -->
+    <div id="tablaRegistros">
+        <h2 id="resumenTitulo">Resumen de Registros por Usuario</h2>
+        <div>
+            <h3>Surtido</h3>
+            <table id="tablaSurtido">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Registros</th>
+                        <th>Tiempo Promedio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Filas generadas dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <h3>Empaque</h3>
+            <table id="tablaEmpaque">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Registros</th>
+                        <th>Tiempo Promedio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Filas generadas dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <div id="alertaDuplicado" class="alerta">
         <div class="alerta-content">
             <p id="alertaMensaje"></p>
@@ -92,54 +127,5 @@
         </div>
     </div>
     <script src="script.js"></script>
-    <script>
-        function exportarRegistros() {
-            const entregaRegistros = JSON.parse(localStorage.getItem('entrega')) || [];
-            const finalizadoRegistros = JSON.parse(localStorage.getItem('finalizado')) || [];
-        
-            const wb = XLSX.utils.book_new();
-        
-            // Crear hoja para registros de entrega
-            const entregaData = entregaRegistros.map(registro => [
-                registro.pedido,
-                registro.nombre,
-                registro.fechaHora,
-                registro.fechaRegistro,
-                Math.floor(registro.tiempoTotal.split(' ')[0]), // horas
-                Math.floor(registro.tiempoTotal.split(' ')[3])  // minutos
-            ]);
-            entregaData.unshift(['GDL', 'Usuario', 'Fecha de Impresión de Documento', 'Fecha del Registro', 'Horas Transcurridas', 'Minutos Transcurridos']);
-            const entregaWS = XLSX.utils.aoa_to_sheet(entregaData);
-            XLSX.utils.book_append_sheet(wb, entregaWS, 'Registros de Entrega');
-        
-            // Crear hoja para registros de finalizado
-            const finalizadoData = finalizadoRegistros.map(registro => [
-                registro.pedido,
-                registro.nombre,
-                registro.fechaHora,
-                registro.fechaRegistro,
-                Math.floor(registro.tiempoTotal.split(' ')[0]), // horas
-                Math.floor(registro.tiempoTotal.split(' ')[3]), // minutos
-                registro.estatus, // agregar campo estatus
-                registro.observaciones // agregar campo observaciones
-            ]);
-            finalizadoData.unshift(['GDL', 'Usuario', 'Fecha y Hora de Inicio de Empaque', 'Fecha del Registro', 'Horas Transcurridas', 'Minutos Transcurridos', 'Estatus', 'Observaciones']);
-            const finalizadoWS = XLSX.utils.aoa_to_sheet(finalizadoData);
-            XLSX.utils.book_append_sheet(wb, finalizadoWS, 'Registros Finalizados');
-        
-            // Fecha actual para el nombre del archivo
-            const fechaActual = formatDate(new Date());
-            const nombreArchivo = `Registros_${fechaActual}.xlsx`;
-        
-            XLSX.writeFile(wb, nombreArchivo);
-        }
-        
-        function formatDate(date) {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${year}${month}${day}`;
-        }
-    </script>
 </body>
 </html>
