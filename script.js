@@ -1,14 +1,10 @@
-const formIds = {
-    entrega: 'formEntrega',
-    finalizado: 'formFinalizado'
-};
 function mostrarFormulario(opcion) {
     document.querySelectorAll('.registro-form').forEach(form => form.classList.remove('active'));
     document.getElementById('registros').classList.remove('active');
     document.getElementById('opciones').classList.add('hidden');
     document.getElementById('tituloPrincipal').classList.add('hidden');
     document.getElementById(`registro${capitalize(opcion)}`).classList.add('active');
-    document.getElementById('resumenTitulo').classList.add('hidden');  // Ocultar el título
+    document.getElementById('resumenTitulo').classList.add('hidden');
 }
 function registrar(opcion) {
     const form = document.getElementById(formIds[opcion]);
@@ -17,13 +13,13 @@ function registrar(opcion) {
     const fechaHora = form.querySelector('input[type="datetime-local"]').value;
     const timestamp = new Date();
 
-    // Verificar si el pedido ya ha sido registrado
     if (verificarDuplicado(opcion, pedido)) {
         mostrarAlerta(opcion);
         return;
     }
 
     const registro = {
+        id: Date.now(),
         nombre,
         pedido,
         fechaHora: formatDateTime(new Date(fechaHora)),
@@ -42,7 +38,7 @@ function registrar(opcion) {
 
     form.reset();
     mostrarMensaje(opcion, 'El registro se realizó exitosamente.');
-    actualizarTablaRegistros();  // Llamar a la función después de registrar un nuevo pedido
+    actualizarTablaRegistros();
 }
 function verificarDuplicado(opcion, pedido) {
     let registros = JSON.parse(localStorage.getItem(opcion)) || [];
@@ -50,8 +46,8 @@ function verificarDuplicado(opcion, pedido) {
 }
 function mostrarAlerta(opcion) {
     const mensaje = opcion === 'entrega'
-        ? "ADVERTENCIA EL PEDIDO QUE ESTA INGRESANDO YA HA SIDO REGISTRADO CON ANTERIORIDAD, FAVOR DE VALIDAR QUE EL PEDIDO NO HAYA SIDO SURTIDO DOS VECES"
-        : "ADVERTENCIA EL PEDIDO YA HA SIDO REGISTRADO CON ANTERIORIDAD, FAVOR DE VALIDAD NUEVAMENTE EL PEDIDO";
+        ? "ADVERTENCIA: EL PEDIDO QUE ESTÁ INGRESANDO YA HA SIDO REGISTRADO ANTERIORMENTE. POR FAVOR, VALIDAR QUE EL PEDIDO NO HAYA SIDO SURTIDO DOS VECES."
+        : "ADVERTENCIA: EL PEDIDO YA HA SIDO REGISTRADO ANTERIORMENTE. POR FAVOR, VALIDAR NUEVAMENTE EL PEDIDO.";
     document.getElementById('alertaMensaje').innerText = mensaje;
     document.getElementById('alertaDuplicado').classList.add('active');
 }
@@ -63,14 +59,14 @@ function cancelarRegistro() {
     document.getElementById('registros').classList.remove('active');
     document.getElementById('opciones').classList.remove('hidden');
     document.getElementById('tituloPrincipal').classList.remove('hidden');
-    document.getElementById('resumenTitulo').classList.remove('hidden');  // Mostrar el título
+    document.getElementById('resumenTitulo').classList.remove('hidden');
 }
 function mostrarTodosRegistros() {
     mostrarRegistros();
     document.getElementById('registros').classList.add('active');
     document.getElementById('opciones').classList.add('hidden');
     document.getElementById('tituloPrincipal').classList.add('hidden');
-    document.getElementById('resumenTitulo').classList.add('hidden');  // Ocultar el título
+    document.getElementById('resumenTitulo').classList.add('hidden');
 }
 function mostrarRegistros() {
     const tipos = ['entrega', 'finalizado'];
@@ -79,7 +75,7 @@ function mostrarRegistros() {
     tipos.forEach(tipo => {
         const registros = JSON.parse(localStorage.getItem(tipo)) || [];
         registros.forEach(registro => {
-            listaHTML += `<div class="registro ${tipo}">
+            listaHTML += `<div class="registro ${tipo}" data-id="${registro.id}">
                             <p><strong>Nombre:</strong> ${registro.nombre}</p>
                             <p><strong>GDL:</strong> ${registro.pedido}</p>
                             <p><strong>Fecha y Hora:</strong> ${registro.fechaHora}</p>
@@ -89,11 +85,40 @@ function mostrarRegistros() {
                 listaHTML += `<p><strong>Estatus:</strong> ${registro.estatus}</p>
                               <p><strong>Observaciones:</strong> ${registro.observaciones}</p>`;
             }
-            listaHTML += `</div>`;
+            listaHTML += `<button onclick="editarRegistro('${tipo}', ${registro.id})">Editar</button>
+                          <button onclick="eliminarRegistro('${tipo}', ${registro.id})">Eliminar</button>
+                          </div>`;
         });
     });
 
     document.getElementById('listaRegistros').innerHTML = listaHTML;
+}
+function editarRegistro(tipo, id) {
+    const registros = JSON.parse(localStorage.getItem(tipo)) || [];
+    const registro = registros.find(r => r.id === id);
+    
+    if (!registro) return;
+
+    const form = document.getElementById(formIds[tipo]);
+    form.querySelector('select[id^="nombre"]').value = registro.nombre;
+    form.querySelector('input[id^="pedido"]').value = registro.pedido;
+    form.querySelector('input[type="datetime-local"]').value = new Date(registro.fechaHora).toISOString().slice(0, 16);
+
+    if (tipo === 'finalizado') {
+        document.getElementById('estatus').value = registro.estatus;
+        document.getElementById('observaciones').value = registro.observaciones;
+    }
+
+    mostrarFormulario(tipo);
+
+    eliminarRegistro(tipo, id);
+}
+function eliminarRegistro(tipo, id) {
+    let registros = JSON.parse(localStorage.getItem(tipo)) || [];
+    registros = registros.filter(registro => registro.id !== id);
+    localStorage.setItem(tipo, JSON.stringify(registros));
+    mostrarRegistros();
+    actualizarTablaRegistros();
 }
 function buscarPorPedido() {
     const pedidoBusqueda = document.getElementById('pedidoBusqueda').value.trim().toUpperCase();
@@ -105,7 +130,7 @@ function buscarPorPedido() {
     tipos.forEach(tipo => {
         const registros = (JSON.parse(localStorage.getItem(tipo)) || []).filter(registro => registro.pedido.toUpperCase().includes(pedidoBusqueda));
         registros.forEach(registro => {
-            listaHTML += `<div class="registro ${tipo}">
+            listaHTML += `<div class="registro ${tipo}" data-id="${registro.id}">
                             <p><strong>Nombre:</strong> ${registro.nombre}</p>
                             <p><strong>GDL:</strong> ${registro.pedido}</p>
                             <p><strong>Fecha y Hora:</strong> ${registro.fechaHora}</p>
@@ -115,7 +140,9 @@ function buscarPorPedido() {
                 listaHTML += `<p><strong>Estatus:</strong> ${registro.estatus}</p>
                               <p><strong>Observaciones:</strong> ${registro.observaciones}</p>`;
             }
-            listaHTML += `</div>`;
+            listaHTML += `<button onclick="editarRegistro('${tipo}', ${registro.id})">Editar</button>
+                          <button onclick="eliminarRegistro('${tipo}', ${registro.id})">Eliminar</button>
+                          </div>`;
         });
     });
 
@@ -124,7 +151,8 @@ function buscarPorPedido() {
 function borrarFiltro() {
     document.getElementById('pedidoBusqueda').value = '';
     mostrarRegistros();
-}function calcularTiempoTotal(fechaInicio, fechaFin) {
+}
+function calcularTiempoTotal(fechaInicio, fechaFin) {
     const diff = fechaFin - fechaInicio;
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -132,13 +160,13 @@ function borrarFiltro() {
 }
 function formatDateTime(date) {
     return new Intl.DateTimeFormat('es-ES', {
-        day: '2-digit', 
-        month: '2-digit', 
-        year: 'numeric', 
-        hour: '2-digit', 
-        minute: '2-digit', 
-        second: '2-digit', 
-        hour12: true 
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
     }).format(date);
 }
 function capitalize(str) {
@@ -219,6 +247,7 @@ function exportarRegistros() {
 
     XLSX.writeFile(wb, nombreArchivo);
 }
+
 function formatDate(date) {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -230,7 +259,7 @@ function volverAlPrincipal() {
     document.getElementById('listaRegistros').innerHTML = '';
     document.getElementById('opciones').classList.remove('hidden');
     document.getElementById('tituloPrincipal').classList.remove('hidden');
-    document.getElementById('resumenTitulo').classList.remove('hidden');  // Mostrar el título
+    document.getElementById('resumenTitulo').classList.remove('hidden');
 }
 function actualizarReloj() {
     const now = new Date();
@@ -287,6 +316,8 @@ function actualizarTablaRegistros() {
     document.querySelector('#tablaSurtido tbody').innerHTML = crearFilasTabla(registrosSurtido);
     document.querySelector('#tablaEmpaque tbody').innerHTML = crearFilasTabla(registrosEmpaque);
 }
+
+// Inicializar la página
 window.onload = function() {
     setInterval(actualizarReloj, 1000);
     actualizarTablaRegistros();  // Llamar a la función al cargar la página
