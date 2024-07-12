@@ -205,3 +205,20 @@ button:hover {
 .hidden {
     display: none;
 }
+
+/* Nuevas reglas para los botones */
+.eliminar-surtido, .eliminar-empaque {
+    background-color: #e0245e; /* Rojo */
+}
+
+.eliminar-surtido:hover, .eliminar-empaque:hover {
+    background-color: #c81e4f; /* Rojo más oscuro al pasar el mouse */
+}
+
+.guardar-cambios {
+    background-color: #17bf63; /* Verde */
+}
+
+.guardar-cambios:hover {
+    background-color: #0b9f4d; /* Verde más oscuro al pasar el mouse */
+}
