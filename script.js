@@ -17,6 +17,12 @@ function registrar(opcion) {
     const fechaHora = form.querySelector('input[type="datetime-local"]').value;
     const timestamp = new Date();
 
+    // Verificar formato del pedido
+    if (!/^(GDL\d{6})$/.test(pedido)) {
+        mostrarMensaje(opcion, 'El código de pedido debe comenzar con "GDL" seguido de 6 dígitos.');
+        return;
+    }
+
     // Verificar si el pedido ya ha sido registrado
     if (verificarDuplicado(opcion, pedido)) {
         mostrarAlerta(opcion);
@@ -24,16 +30,24 @@ function registrar(opcion) {
     }
 
     const registro = {
+        id: Date.now(),
         nombre,
         pedido,
-        fechaHora: formatDateTime(new Date(fechaHora)),
-        fechaRegistro: formatDateTime(timestamp),
+        fechaHora: new Date(fechaHora).toISOString(),
+        fechaRegistro: timestamp.toISOString(),
         tiempoTotal: calcularTiempoTotal(new Date(fechaHora), timestamp)
     };
 
     if (opcion === 'finalizado') {
         registro.estatus = document.getElementById('estatus').value;
         registro.observaciones = document.getElementById('observaciones').value;
+
+        // Vincular con el registro de entrega correspondiente
+        const entregaRegistros = JSON.parse(localStorage.getItem('entrega')) || [];
+        const registroEntrega = entregaRegistros.find(r => r.pedido === pedido);
+        if (registroEntrega) {
+            registro.vinculadoConEntrega = registroEntrega.id;
+        }
     }
 
     let registros = JSON.parse(localStorage.getItem(opcion)) || [];
@@ -50,8 +64,8 @@ function verificarDuplicado(opcion, pedido) {
 }
 function mostrarAlerta(opcion) {
     const mensaje = opcion === 'entrega'
-        ? "ADVERTENCIA EL PEDIDO QUE ESTA INGRESANDO YA HA SIDO REGISTRADO CON ANTERIORIDAD, FAVOR DE VALIDAR QUE EL PEDIDO NO HAYA SIDO SURTIDO DOS VECES"
-        : "ADVERTENCIA EL PEDIDO YA HA SIDO REGISTRADO CON ANTERIORIDAD, FAVOR DE VALIDAD NUEVAMENTE EL PEDIDO";
+        ? "ADVERTENCIA: EL PEDIDO QUE ESTÁ INGRESANDO YA HA SIDO REGISTRADO ANTERIORMENTE. POR FAVOR, VALIDAR QUE EL PEDIDO NO HAYA SIDO SURTIDO DOS VECES."
+        : "ADVERTENCIA: EL PEDIDO YA HA SIDO REGISTRADO ANTERIORMENTE. POR FAVOR, VALIDAR NUEVAMENTE EL PEDIDO.";
     document.getElementById('alertaMensaje').innerText = mensaje;
     document.getElementById('alertaDuplicado').classList.add('active');
 }
@@ -65,6 +79,13 @@ function cancelarRegistro() {
     document.getElementById('tituloPrincipal').classList.remove('hidden');
     document.getElementById('resumenTitulo').classList.remove('hidden');  // Mostrar el título
 }
+function mostrarMensaje(opcion, mensaje) {
+    document.getElementById(`mensaje${capitalize(opcion)}`).innerText = mensaje;
+    setTimeout(() => {
+        document.getElementById(`mensaje${capitalize(opcion)}`).innerText = '';
+        cancelarRegistro();
+    }, 3000);
+}
 function mostrarTodosRegistros() {
     mostrarRegistros();
     document.getElementById('registros').classList.add('active');
@@ -73,24 +94,62 @@ function mostrarTodosRegistros() {
     document.getElementById('resumenTitulo').classList.add('hidden');  // Ocultar el título
 }
 function mostrarRegistros() {
-    const tipos = ['entrega', 'finalizado'];
+    const entregaRegistros = JSON.parse(localStorage.getItem('entrega')) || [];
+    const finalizadoRegistros = JSON.parse(localStorage.getItem('finalizado')) || [];
     let listaHTML = '';
 
-    tipos.forEach(tipo => {
-        const registros = JSON.parse(localStorage.getItem(tipo)) || [];
-        registros.forEach(registro => {
-            listaHTML += `<div class="registro ${tipo}">
-                            <p><strong>Nombre:</strong> ${registro.nombre}</p>
-                            <p><strong>GDL:</strong> ${registro.pedido}</p>
-                            <p><strong>Fecha y Hora:</strong> ${registro.fechaHora}</p>
-                            <p><strong>Fecha del Registro:</strong> ${registro.fechaRegistro}</p>
-                            <p><strong>Tiempo Total:</strong> ${registro.tiempoTotal}</p>`;
-            if (tipo === 'finalizado') {
-                listaHTML += `<p><strong>Estatus:</strong> ${registro.estatus}</p>
-                              <p><strong>Observaciones:</strong> ${registro.observaciones}</p>`;
-            }
-            listaHTML += `</div>`;
-        });
+    entregaRegistros.forEach(entrega => {
+        const finalizado = finalizadoRegistros.find(f => f.pedido === entrega.pedido);
+        if (finalizado) {
+            const tiempoSurtido = calcularTiempoTotal(new Date(entrega.fechaHora), new Date(entrega.fechaRegistro));
+            const tiempoEmpaque = calcularTiempoTotal(new Date(finalizado.fechaHora), new Date(finalizado.fechaRegistro));
+            const tiempoTotal = calcularTiempoTotal(new Date(entrega.fechaHora), new Date(finalizado.fechaRegistro));
+
+            listaHTML += `
+                <div class="registro vinculado" data-id="${entrega.id}">
+                    <p><strong>Pedido:</strong> ${entrega.pedido}</p>
+                    <p><strong>Surtido por:</strong> ${entrega.nombre}</p>
+                    <p><strong>Tiempo de Surtido:</strong> ${tiempoSurtido}</p>
+                    <p><strong>Empacado por:</strong> ${finalizado.nombre}</p>
+                    <p><strong>Tiempo de Empaque:</strong> ${tiempoEmpaque}</p>
+                    <p><strong>Estatus:</strong> ${finalizado.estatus}</p>
+                    <p><strong>Observaciones:</strong> ${finalizado.observaciones}</p>
+                    <p><strong>Tiempo Total del Proceso:</strong> ${tiempoTotal}</p>
+                    <button onclick="editarRegistro('entrega', ${entrega.id})">Editar Surtido</button>
+                    <button onclick="editarRegistro('finalizado', ${finalizado.id})">Editar Empaque</button>
+                    <button onclick="eliminarRegistro('entrega', ${entrega.id})">Eliminar Surtido</button>
+                    <button onclick="eliminarRegistro('finalizado', ${finalizado.id})">Eliminar Empaque</button>
+                </div>`;
+        } else {
+            listaHTML += `
+                <div class="registro entrega" data-id="${entrega.id}">
+                    <p><strong>Pedido:</strong> ${entrega.pedido}</p>
+                    <p><strong>Surtido por:</strong> ${entrega.nombre}</p>
+                    <p><strong>Fecha y Hora:</strong> ${entrega.fechaHora}</p>
+                    <p><strong>Fecha del Registro:</strong> ${entrega.fechaRegistro}</p>
+                    <p><strong>Tiempo Total:</strong> ${entrega.tiempoTotal}</p>
+                    <button onclick="editarRegistro('entrega', ${entrega.id})">Editar</button>
+                    <button onclick="eliminarRegistro('entrega', ${entrega.id})">Eliminar</button>
+                </div>`;
+        }
+    });
+
+    finalizadoRegistros.forEach(finalizado => {
+        const entrega = entregaRegistros.find(e => e.pedido === finalizado.pedido);
+        if (!entrega) {
+            listaHTML += `
+                <div class="registro finalizado" data-id="${finalizado.id}">
+                    <p><strong>Pedido:</strong> ${finalizado.pedido}</p>
+                    <p><strong>Empacado por:</strong> ${finalizado.nombre}</p>
+                    <p><strong>Fecha y Hora:</strong> ${finalizado.fechaHora}</p>
+                    <p><strong>Fecha del Registro:</strong> ${finalizado.fechaRegistro}</p>
+                    <p><strong>Tiempo Total:</strong> ${finalizado.tiempoTotal}</p>
+                    <p><strong>Estatus:</strong> ${finalizado.estatus}</p>
+                    <p><strong>Observaciones:</strong> ${finalizado.observaciones}</p>
+                    <button onclick="editarRegistro('finalizado', ${finalizado.id})">Editar</button>
+                    <button onclick="eliminarRegistro('finalizado', ${finalizado.id})">Eliminar</button>
+                </div>`;
+        }
     });
 
     document.getElementById('listaRegistros').innerHTML = listaHTML;
@@ -105,7 +164,7 @@ function buscarPorPedido() {
     tipos.forEach(tipo => {
         const registros = (JSON.parse(localStorage.getItem(tipo)) || []).filter(registro => registro.pedido.toUpperCase().includes(pedidoBusqueda));
         registros.forEach(registro => {
-            listaHTML += `<div class="registro ${tipo}">
+            listaHTML += `<div class="registro ${tipo}" data-id="${registro.id}">
                             <p><strong>Nombre:</strong> ${registro.nombre}</p>
                             <p><strong>GDL:</strong> ${registro.pedido}</p>
                             <p><strong>Fecha y Hora:</strong> ${registro.fechaHora}</p>
@@ -114,8 +173,13 @@ function buscarPorPedido() {
             if (tipo === 'finalizado') {
                 listaHTML += `<p><strong>Estatus:</strong> ${registro.estatus}</p>
                               <p><strong>Observaciones:</strong> ${registro.observaciones}</p>`;
+                if (registro.vinculadoConEntrega) {
+                    listaHTML += `<p><strong>Vinculado con Entrega ID:</strong> ${registro.vinculadoConEntrega}</p>`;
+                }
             }
-            listaHTML += `</div>`;
+            listaHTML += `<button onclick="editarRegistro('${tipo}', ${registro.id})">Editar</button>
+                          <button onclick="eliminarRegistro('${tipo}', ${registro.id})">Eliminar</button>
+                          </div>`;
         });
     });
 
@@ -124,101 +188,159 @@ function buscarPorPedido() {
 function borrarFiltro() {
     document.getElementById('pedidoBusqueda').value = '';
     mostrarRegistros();
-}function calcularTiempoTotal(fechaInicio, fechaFin) {
+}
+function editarRegistro(tipo, id) {
+    const registros = JSON.parse(localStorage.getItem(tipo)) || [];
+    const registro = registros.find(r => r.id === id);
+    
+    if (!registro) return;
+
+    const form = document.getElementById(formIds[tipo]);
+    form.querySelector('select[id^="nombre"]').value = registro.nombre;
+    form.querySelector('input[id^="pedido"]').value = registro.pedido;
+    form.querySelector('input[type="datetime-local"]').value = new Date(registro.fechaHora).toISOString().slice(0, 16);
+
+    if (tipo === 'finalizado') {
+        document.getElementById('estatus').value = registro.estatus;
+        document.getElementById('observaciones').value = registro.observaciones;
+    }
+
+    mostrarFormulario(tipo);
+
+    // Guardar el ID del registro que se está editando en el formulario
+    form.setAttribute('data-editing-id', id);
+}
+function guardarCambios(tipo) {
+    const form = document.getElementById(formIds[tipo]);
+    const id = form.getAttribute('data-editing-id');
+    if (!id) return;
+
+    const nombre = form.querySelector('select[id^="nombre"]').value;
+    const pedido = form.querySelector('input[id^="pedido"]').value;
+    const fechaHora = form.querySelector('input[type="datetime-local"]').value;
+
+    // Verificar formato del pedido
+    if (!/^(GDL\d{6})$/.test(pedido)) {
+        mostrarMensaje(tipo, 'El código de pedido debe comenzar con "GDL" seguido de 6 dígitos.');
+        return;
+    }
+
+    const registros = JSON.parse(localStorage.getItem(tipo)) || [];
+    const index = registros.findIndex(r => r.id == id);
+    if (index === -1) return;
+
+    registros[index].nombre = nombre;
+    registros[index].pedido = pedido;
+    registros[index].fechaHora = new Date(fechaHora).toISOString(); // Asegurar que se guarde como ISO string
+    registros[index].fechaRegistro = new Date().toISOString();
+
+    if (tipo === 'finalizado') {
+        registros[index].estatus = document.getElementById('estatus').value;
+        registros[index].observaciones = document.getElementById('observaciones').value;
+    }
+
+    localStorage.setItem(tipo, JSON.stringify(registros));
+
+    form.removeAttribute('data-editing-id');
+    form.reset();
+    mostrarMensaje(tipo, 'El registro se actualizó exitosamente.');
+    actualizarTablaRegistros();
+    cancelarRegistro();
+}
+function eliminarRegistro(tipo, id) {
+    let registros = JSON.parse(localStorage.getItem(tipo)) || [];
+    registros = registros.filter(registro => registro.id !== id);
+    localStorage.setItem(tipo, JSON.stringify(registros));
+    mostrarRegistros();
+    actualizarTablaRegistros();
+}
+function calcularTiempoTotal(fechaInicio, fechaFin) {
     const diff = fechaFin - fechaInicio;
+    if (isNaN(diff)) return '0 horas y 0 minutos';
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     return `${hours} horas y ${minutes} minutos`;
 }
+
+function calcularTiempoTotalEnHorasYMinutos(fechaInicio, fechaFin) {
+    const diff = fechaFin - fechaInicio;
+    if (isNaN(diff)) return { horas: 0, minutos: 0 };
+    const horas = Math.floor(diff / (1000 * 60 * 60));
+    const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    return { horas, minutos };
+}
 function formatDateTime(date) {
     return new Intl.DateTimeFormat('es-ES', {
-        day: '2-digit', 
-        month: '2-digit', 
-        year: 'numeric', 
-        hour: '2-digit', 
-        minute: '2-digit', 
-        second: '2-digit', 
-        hour12: true 
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
     }).format(date);
 }
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 function exportarRegistros() {
-    const fechaInicio = document.getElementById('fechaInicio').value;
-    const fechaFin = document.getElementById('fechaFin').value;
-
-    if (!fechaInicio || !fechaFin) {
-        alert("Por favor, seleccione un rango de fechas válido.");
-        return;
-    }
-
-    const fechaInicioObj = new Date(fechaInicio);
-    const fechaFinObj = new Date(fechaFin);
-    fechaFinObj.setHours(23, 59, 59, 999); // Asegurarse de incluir todo el día de la fecha final
-
     const entregaRegistros = JSON.parse(localStorage.getItem('entrega')) || [];
     const finalizadoRegistros = JSON.parse(localStorage.getItem('finalizado')) || [];
 
     const wb = XLSX.utils.book_new();
 
-    // Función para filtrar registros por rango de fechas
-    function filtrarRegistrosPorFecha(registros, fechaInicio, fechaFin) {
-        return registros.filter(registro => {
-            const fechaRegistro = new Date(registro.fechaRegistro);
-            return fechaRegistro >= fechaInicio && fechaRegistro <= fechaFin;
-        });
-    }
+    // Crear una hoja con todos los datos registrados
+    const registrosData = [];
 
-    // Filtrar registros de entrega por rango de fechas
-    const entregaFiltrados = filtrarRegistrosPorFecha(entregaRegistros, fechaInicioObj, fechaFinObj);
+    entregaRegistros.forEach(entrega => {
+        const finalizado = finalizadoRegistros.find(f => f.pedido === entrega.pedido);
+        const tiempoSurtido = calcularTiempoTotalEnHorasYMinutos(new Date(entrega.fechaHora), new Date(entrega.fechaRegistro));
+        const tiempoEmpaque = finalizado ? calcularTiempoTotalEnHorasYMinutos(new Date(finalizado.fechaHora), new Date(finalizado.fechaRegistro)) : { horas: 0, minutos: 0 };
+        const tiempoTotalProceso = finalizado ? calcularTiempoTotalEnHorasYMinutos(new Date(entrega.fechaHora), new Date(finalizado.fechaRegistro)) : { horas: 0, minutos: 0 };
 
-    if (entregaFiltrados.length > 0) {
-        // Crear hoja para registros de entrega
-        const entregaData = entregaFiltrados.map(registro => [
-            registro.pedido,
-            registro.nombre,
-            registro.fechaHora,
-            registro.fechaRegistro,
-            Math.floor(registro.tiempoTotal.split(' ')[0]), // horas
-            Math.floor(registro.tiempoTotal.split(' ')[3])  // minutos
+        registrosData.push([
+            entrega.pedido,
+            entrega.nombre,
+            tiempoSurtido.horas,
+            tiempoSurtido.minutos,
+            entrega.fechaRegistro,
+            finalizado ? finalizado.nombre : '',
+            tiempoEmpaque.horas,
+            tiempoEmpaque.minutos,
+            finalizado ? finalizado.fechaRegistro : '',
+            finalizado ? finalizado.estatus : '',
+            finalizado ? finalizado.observaciones : '',
+            tiempoTotalProceso.horas,
+            tiempoTotalProceso.minutos
         ]);
-        entregaData.unshift(['GDL', 'Usuario', 'Fecha de Impresión de Documento', 'Fecha del Registro', 'Horas Transcurridas', 'Minutos Transcurridos']);
-        const entregaWS = XLSX.utils.aoa_to_sheet(entregaData);
-        XLSX.utils.book_append_sheet(wb, entregaWS, 'Registros de Entrega');
-    }
+    });
 
-    // Filtrar registros de finalizado por rango de fechas
-    const finalizadoFiltrados = filtrarRegistrosPorFecha(finalizadoRegistros, fechaInicioObj, fechaFinObj);
+    // Agregar encabezados
+    registrosData.unshift([
+        'GDL',
+        'USUARIO SURTIDO',
+        'TIEMPO TOTAL HORAS',
+        'TIEMPO TOTAL MINUTOS',
+        'FECHA Y HORA DEL REGISTRO SURTIDO',
+        'USUARIO DE EMPAQUE',
+        'TOTAL HORAS EMPAQUE',
+        'TOTAL MINUTOS EMPAQUE',
+        'FECHA Y HORA DEL REGISTRO EMPAQUE',
+        'STATUS',
+        'OBSERVACIONES',
+        'TIEMPO TOTAL DEL PROCESO HORAS',
+        'TIEMPO TOTAL DEL PROCESO MINUTOS'
+    ]);
 
-    if (finalizadoFiltrados.length > 0) {
-        // Crear hoja para registros de finalizado
-        const finalizadoData = finalizadoFiltrados.map(registro => [
-            registro.pedido,
-            registro.nombre,
-            registro.fechaHora,
-            registro.fechaRegistro,
-            Math.floor(registro.tiempoTotal.split(' ')[0]), // horas
-            Math.floor(registro.tiempoTotal.split(' ')[3]), // minutos
-            registro.estatus, // agregar campo estatus
-            registro.observaciones // agregar campo observaciones
-        ]);
-        finalizadoData.unshift(['GDL', 'Usuario', 'Fecha y Hora de Inicio de Empaque', 'Fecha del Registro', 'Horas Transcurridas', 'Minutos Transcurridos', 'Estatus', 'Observaciones']);
-        const finalizadoWS = XLSX.utils.aoa_to_sheet(finalizadoData);
-        XLSX.utils.book_append_sheet(wb, finalizadoWS, 'Registros Finalizados');
-    }
+    const ws = XLSX.utils.aoa_to_sheet(registrosData);
+    XLSX.utils.book_append_sheet(wb, ws, 'Registros Completos');
 
-    if (entregaFiltrados.length === 0 && finalizadoFiltrados.length === 0) {
-        alert("No hay registros dentro del rango de fechas seleccionado.");
-        return;
-    }
-
-    // Fecha actual para el nombre del archivo
     const fechaActual = formatDate(new Date());
     const nombreArchivo = `Registros_${fechaActual}.xlsx`;
 
     XLSX.writeFile(wb, nombreArchivo);
 }
+
 function formatDate(date) {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -230,7 +352,7 @@ function volverAlPrincipal() {
     document.getElementById('listaRegistros').innerHTML = '';
     document.getElementById('opciones').classList.remove('hidden');
     document.getElementById('tituloPrincipal').classList.remove('hidden');
-    document.getElementById('resumenTitulo').classList.remove('hidden');  // Mostrar el título
+    document.getElementById('resumenTitulo').classList.remove('hidden');
 }
 function actualizarReloj() {
     const now = new Date();
@@ -239,13 +361,6 @@ function actualizarReloj() {
     const segundos = String(now.getSeconds()).padStart(2, '0');
     const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
     document.getElementById('reloj').innerText = `${horas}:${minutos}:${segundos} ${ampm}`;
-}
-function mostrarMensaje(opcion, mensaje) {
-    document.getElementById(`mensaje${capitalize(opcion)}`).innerText = mensaje;
-    setTimeout(() => {
-        document.getElementById(`mensaje${capitalize(opcion)}`).innerText = '';
-        cancelarRegistro();
-    }, 3000);
 }
 function actualizarTablaRegistros() {
     const entregaRegistros = JSON.parse(localStorage.getItem('entrega')) || [];
@@ -291,3 +406,24 @@ window.onload = function() {
     setInterval(actualizarReloj, 1000);
     actualizarTablaRegistros();  // Llamar a la función al cargar la página
 };
+function calcularTiempoTotal(fechaInicio, fechaFin) {
+    const diff = fechaFin - fechaInicio;
+    if (isNaN(diff)) return '0 horas y 0 minutos';
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    return `${hours} horas y ${minutes} minutos`;
+}
+function formatDateTime(date) {
+    return new Intl.DateTimeFormat('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+    }).format(date);
+}
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
