@@ -9,122 +9,117 @@
 </head>
 <body>
     <div id="reloj-container">
-        <div id="reloj"></div>
+    <div id="reloj"></div>
     </div>
     <h1 id="tituloPrincipal">REGISTRO DE PEDIDOS</h1>
-
     <div id="opciones" class="opciones">
-        <button onclick="mostrarFormulario('entrega')">SURTIDO</button>
-        <button onclick="mostrarFormulario('finalizado')">EMPAQUE</button>
-        <button onclick="mostrarTodosRegistros()">REGISTROS</button>
+    <button onclick="mostrarFormulario('entrega')">SURTIDO</button>
+    <button onclick="mostrarFormulario('finalizado')">EMPAQUE</button>
+    <button onclick="mostrarTodosRegistros()">REGISTROS</button>
     </div>
-
     <div id="registroEntrega" class="registro-form">
-        <h2>ENTREGA DE PEDIDOS A EMPAQUE</h2>
-        <form id="formEntrega">
-            <label for="nombreEntrega">SELECCIONE USUARIO:</label>
-            <select id="nombreEntrega" required>
-                <option value="">SELECCIONE UN USUARIO</option>
-                <option value="ISAC">ISAC</option>
-                <option value="RAFAEL">RAFAEL</option>
-                <option value="ALEJANDRO">ALEJANDRO</option>
-                <option value="CARLOS">CARLOS</option>
-                <option value="ISRRAEL">ISRRAEL</option>
-                <option value="ARTURO">ARTURO</option>
-            </select>
-            <label for="pedidoEntrega">GDL:</label>
-            <input type="text" id="pedidoEntrega" required>
-            <label for="fechaHoraImpresion">FECHA Y HORA DE IMPRESIÓN DE DOCUMENTO:</label>
-            <input type="datetime-local" id="fechaHoraImpresion" required>
-            <button type="button" onclick="registrar('entrega')">REGISTRAR ENTREGA</button>
-            <button type="button" class="cancelar" onclick="cancelarRegistro()">CANCELAR</button>
-        </form>
-        <p id="mensajeEntrega" class="message"></p>
+    <h2>ENTREGA DE PEDIDOS A EMPAQUE</h2>
+    <form id="formEntrega">
+        <label for="nombreEntrega">SELECCIONE USUARIO:</label>
+        <select id="nombreEntrega" required>
+            <option value="">SELECCIONE UN USUARIO</option>
+            <option value="ISAC">ISAC</option>
+            <option value="RAFAEL">RAFAEL</option>
+            <option value="ALEJANDRO">ALEJANDRO</option>
+            <option value="CARLOS">CARLOS</option>
+            <option value="ISRRAEL">ISRRAEL</option>
+            <option value="ARTURO">ARTURO</option>
+        </select>
+        <label for="pedidoEntrega">GDL:</label>
+        <input type="text" id="pedidoEntrega" required>
+        <label for="fechaHoraImpresion">FECHA Y HORA DE IMPRESIÓN DE DOCUMENTO:</label>
+        <input type="datetime-local" id="fechaHoraImpresion" required>
+        <button type="button" onclick="registrar('entrega')">REGISTRAR ENTREGA</button>
+        <button type="button" onclick="guardarCambios('entrega')">GUARDAR CAMBIOS</button>
+        <button type="button" class="cancelar" onclick="cancelarRegistro()">CANCELAR</button>
+    </form>
+    <p id="mensajeEntrega" class="message"></p>
     </div>
-
     <div id="registroFinalizado" class="registro-form">
-        <h2>REGISTRO DE EMPAQUE</h2>
-        <form id="formFinalizado">
-            <label for="nombreFinalizado">SELECCIONE USUARIO:</label>
-            <select id="nombreFinalizado" required>
-                <option value="">SELECCIONE UN USUARIO</option>
-                <option value="EDGAR">EDGAR</option>
-                <option value="MARCOS">MARCOS</option>
-                <option value="IRVIN">IRVIN</option>
-                <option value="KAREN">KAREN</option>
-                <option value="FRANCISCO">FRANCISCO</option>
-            </select>
-            <label for="pedidoFinalizado">GDL:</label>
-            <input type="text" id="pedidoFinalizado" required>
-            <label for="fechaHoraInicioEmpaque">FECHA Y HORA DE INICIO DE EMPAQUE:</label>
-            <input type="datetime-local" id="fechaHoraInicioEmpaque" required>
-            <label for="estatus">ESTATUS:</label>
-            <select id="estatus" required>
-                <option value="COMPLETO">COMPLETO</option>
-                <option value="INCIDENCIA">INCIDENCIA</option>
-            </select>
-            <textarea id="observaciones" placeholder="OBSERVACIONES (SI APLICA)"></textarea>
-            <button type="button" onclick="registrar('finalizado')">FINALIZAR</button>
-            <button type="button" class="cancelar" onclick="cancelarRegistro()">CANCELAR</button>
-        </form>
-        <p id="mensajeFinalizado" class="message"></p>
+    <h2>REGISTRO DE EMPAQUE</h2>
+    <form id="formFinalizado">
+        <label for="nombreFinalizado">SELECCIONE USUARIO:</label>
+        <select id="nombreFinalizado" required>
+            <option value="">SELECCIONE UN USUARIO</option>
+            <option value="EDGAR">EDGAR</option>
+            <option value="MARCOS">MARCOS</option>
+            <option value="IRVIN">IRVIN</option>
+            <option value="KAREN">KAREN</option>
+            <option value="FRANCISCO">FRANCISCO</option>
+        </select>
+        <label for="pedidoFinalizado">GDL:</label>
+        <input type="text" id="pedidoFinalizado" required>
+        <label for="fechaHoraInicioEmpaque">FECHA Y HORA DE INICIO DE EMPAQUE:</label>
+        <input type="datetime-local" id="fechaHoraInicioEmpaque" required>
+        <label for="estatus">ESTATUS:</label>
+        <select id="estatus" required>
+            <option value="COMPLETO">COMPLETO</option>
+            <option value="INCIDENCIA">INCIDENCIA</option>
+        </select>
+        <textarea id="observaciones" placeholder="OBSERVACIONES (SI APLICA)"></textarea>
+        <button type="button" onclick="registrar('finalizado')">FINALIZAR</button>
+        <button type="button" onclick="guardarCambios('finalizado')">GUARDAR CAMBIOS</button>
+        <button type="button" class="cancelar" onclick="cancelarRegistro()">CANCELAR</button>
+    </form>
+    <p id="mensajeFinalizado" class="message"></p>
     </div>
-
     <div id="registros" class="registros">
-        <h2>REGISTROS REALIZADOS</h2>
-        <div id="busquedaPedidoContainer">
-            <label for="pedidoBusqueda">BUSCAR POR PEDIDO (GDL):</label>
-            <input type="text" id="pedidoBusqueda">
-            <div>
-                <button onclick="buscarPorPedido()">APLICAR FILTRO</button>
-                <button class="borrar-filtro" onclick="borrarFiltro()">BORRAR FILTRO</button>
-            </div>
-            <button onclick="exportarRegistros()">EXPORTAR REGISTROS</button>
-            <button class="regresar" onclick="volverAlPrincipal()">REGRESAR</button>
+    <h2>REGISTROS REALIZADOS</h2>
+    <div id="busquedaPedidoContainer">
+        <label for="pedidoBusqueda">BUSCAR POR PEDIDO (GDL):</label>
+        <input type="text" id="pedidoBusqueda">
+        <div>
+            <button onclick="buscarPorPedido()">APLICAR FILTRO</button>
+            <button class="borrar-filtro" onclick="borrarFiltro()">BORRAR FILTRO</button>
         </div>
-        <div id="listaRegistros"></div>
+        <button onclick="exportarRegistros()">EXPORTAR REGISTROS</button>
+        <button class="regresar" onclick="volverAlPrincipal()">REGRESAR</button>
     </div>
-
-    <!-- Nueva sección para tablas de registros -->
+    <div id="listaRegistros"></div>
+    </div>
     <div id="tablaRegistros">
-        <h2 id="resumenTitulo">Resumen de Registros por Usuario</h2>
-        <div>
-            <h3>Surtido</h3>
-            <table id="tablaSurtido">
-                <thead>
-                    <tr>
-                        <th>Usuario</th>
-                        <th>Registros</th>
-                        <th>Tiempo Promedio</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Filas generadas dinámicamente -->
-                </tbody>
-            </table>
-        </div>
-        <div>
-            <h3>Empaque</h3>
-            <table id="tablaEmpaque">
-                <thead>
-                    <tr>
-                        <th>Usuario</th>
-                        <th>Registros</th>
-                        <th>Tiempo Promedio</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Filas generadas dinámicamente -->
-                </tbody>
-            </table>
-        </div>
+    <h2 id="resumenTitulo">Resumen de Registros por Usuario</h2>
+    <div>
+        <h3>Surtido</h3>
+        <table id="tablaSurtido">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Registros</th>
+                    <th>Tiempo Promedio</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Filas generadas dinámicamente -->
+            </tbody>
+        </table>
     </div>
-
+    <div>
+        <h3>Empaque</h3>
+        <table id="tablaEmpaque">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Registros</th>
+                    <th>Tiempo Promedio</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Filas generadas dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+    </div>
     <div id="alertaDuplicado" class="alerta">
-        <div class="alerta-content">
-            <p id="alertaMensaje"></p>
-            <button onclick="cerrarAlerta()">ACEPTAR</button>
-        </div>
+    <div class="alerta-content">
+        <p id="alertaMensaje"></p>
+        <button onclick="cerrarAlerta()">ACEPTAR</button>
+    </div>
     </div>
     <script src="script.js"></script>
 </body>
