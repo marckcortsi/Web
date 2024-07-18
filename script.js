@@ -181,31 +181,6 @@ function buscarPorPedido() {
 
     document.getElementById('listaRegistros').innerHTML = listaHTML;
 }
-function borrarFiltro() {
-    document.getElementById('pedidoBusqueda').value = '';
-    mostrarRegistros();
-}
-function editarRegistro(tipo, id) {
-    const registros = JSON.parse(localStorage.getItem(tipo)) || [];
-    const registro = registros.find(r => r.id === id);
-    
-    if (!registro) return;
-
-    const form = document.getElementById(formIds[tipo]);
-    form.querySelector('select[id^="nombre"]').value = registro.nombre;
-    form.querySelector('input[id^="pedido"]').value = registro.pedido;
-    form.querySelector('input[type="datetime-local"]').value = new Date(registro.fechaHora).toISOString().slice(0, 16);
-
-    if (tipo === 'finalizado') {
-        document.getElementById('estatus').value = registro.estatus;
-        document.getElementById('observaciones').value = registro.observaciones;
-    }
-
-    mostrarFormulario(tipo);
-
-    // Guardar el ID del registro que se está editando en el formulario
-    form.setAttribute('data-editing-id', id);
-}
 function guardarCambios(tipo) {
     const form = document.getElementById(formIds[tipo]);
     const id = form.getAttribute('data-editing-id');
