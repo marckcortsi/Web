@@ -115,10 +115,6 @@ function mostrarRegistros() {
                     <p><strong>Estatus:</strong> ${finalizado.estatus}</p>
                     <p><strong>Observaciones:</strong> ${finalizado.observaciones}</p>
                     <p><strong>Tiempo Total del Proceso:</strong> ${tiempoTotal}</p>
-                    <button onclick="editarRegistro('entrega', ${entrega.id})">Editar Surtido</button>
-                    <button onclick="editarRegistro('finalizado', ${finalizado.id})">Editar Empaque</button>
-                    <button onclick="eliminarRegistro('entrega', ${entrega.id})">Eliminar Surtido</button>
-                    <button onclick="eliminarRegistro('finalizado', ${finalizado.id})">Eliminar Empaque</button>
                 </div>`;
         } else {
             listaHTML += `
@@ -246,13 +242,6 @@ function guardarCambios(tipo) {
     mostrarMensaje(tipo, 'El registro se actualizó exitosamente.');
     actualizarTablaRegistros();
     cancelarRegistro();
-}
-function eliminarRegistro(tipo, id) {
-    let registros = JSON.parse(localStorage.getItem(tipo)) || [];
-    registros = registros.filter(registro => registro.id !== id);
-    localStorage.setItem(tipo, JSON.stringify(registros));
-    mostrarRegistros();
-    actualizarTablaRegistros();
 }
 function calcularTiempoTotal(fechaInicio, fechaFin) {
     const diff = fechaFin - fechaInicio;
