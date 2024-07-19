@@ -82,20 +82,18 @@ button:hover {
     margin-top: 20px;
 }
 
-.registro.entrega {
+/* Estilos de los registros */
+.registro {
+    border: 2px solid #000; /* Línea del recuadro */
+    padding: 10px; /* Espacio interno */
+    margin: 10px 0; /* Espacio entre registros */
+    border-radius: 12px; /* Esquinas redondeadas */
     background-color: rgba(0, 0, 0, 0.8); /* Fondo negro transparente */
-    border: 2px solid #000; /* Borde negro */
-    border-radius: 12px; /* Bordes redondeados */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Sombra negra */
-    margin-bottom: 20px; /* Espacio entre registros */
 }
 
-.registro.finalizado {
-    background-color: rgba(0, 0, 0, 0.8); /* Fondo negro transparente */
-    border: 2px solid #000; /* Borde negro */
-    border-radius: 12px; /* Bordes redondeados */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Sombra negra */
-    margin-bottom: 20px; /* Espacio entre registros */
+.registro p {
+    margin: 5px 0; /* Espacio entre párrafos */
 }
 
 #reloj-container {
