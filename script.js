@@ -1,3 +1,9 @@
+document.addEventListener('DOMContentLoaded', function() {
+    actualizarReloj();
+    setInterval(actualizarReloj, 1000);
+    actualizarTablaRegistros();
+});
+
 const formIds = {
     entrega: 'formEntrega',
     finalizado: 'formFinalizado'
@@ -8,7 +14,7 @@ function mostrarFormulario(opcion) {
     document.getElementById('opciones').classList.add('hidden');
     document.getElementById('tituloPrincipal').classList.add('hidden');
     document.getElementById(`registro${capitalize(opcion)}`).classList.add('active');
-    document.getElementById('resumenTitulo').classList.add('hidden');  // Ocultar el título
+    document.getElementById('resumenTitulo').classList.add('hidden');  // Ocultar el tÃ­tulo
 }
 function registrar(opcion) {
     const form = document.getElementById(formIds[opcion]);
@@ -19,7 +25,7 @@ function registrar(opcion) {
 
     // Verificar formato del pedido
     if (!/^(GDL\d{6})$/.test(pedido)) {
-        mostrarMensaje(opcion, 'El código de pedido debe comenzar con "GDL" seguido de 6 dígitos.');
+        mostrarMensaje(opcion, 'El cÃ³digo de pedido debe comenzar con "GDL" seguido de 6 dÃ­gitos.');
         return;
     }
 
@@ -55,8 +61,8 @@ function registrar(opcion) {
     localStorage.setItem(opcion, JSON.stringify(registros));
 
     form.reset();
-    mostrarMensaje(opcion, 'El registro se realizó exitosamente.');
-    actualizarTablaRegistros();  // Llamar a la función después de registrar un nuevo pedido
+    mostrarMensaje(opcion, 'El registro se realizÃ³ exitosamente.');
+    actualizarTablaRegistros();  // Llamar a la funciÃ³n despuÃ©s de registrar un nuevo pedido
 }
 function verificarDuplicado(opcion, pedido) {
     let registros = JSON.parse(localStorage.getItem(opcion)) || [];
@@ -64,7 +70,7 @@ function verificarDuplicado(opcion, pedido) {
 }
 function mostrarAlerta(opcion) {
     const mensaje = opcion === 'entrega'
-        ? "ADVERTENCIA: EL PEDIDO QUE ESTÁ INGRESANDO YA HA SIDO REGISTRADO ANTERIORMENTE. POR FAVOR, VALIDAR QUE EL PEDIDO NO HAYA SIDO SURTIDO DOS VECES."
+        ? "ADVERTENCIA: EL PEDIDO QUE ESTÃ INGRESANDO YA HA SIDO REGISTRADO ANTERIORMENTE. POR FAVOR, VALIDAR QUE EL PEDIDO NO HAYA SIDO SURTIDO DOS VECES."
         : "ADVERTENCIA: EL PEDIDO YA HA SIDO REGISTRADO ANTERIORMENTE. POR FAVOR, VALIDAR NUEVAMENTE EL PEDIDO.";
     document.getElementById('alertaMensaje').innerText = mensaje;
     document.getElementById('alertaDuplicado').classList.add('active');
@@ -77,7 +83,7 @@ function cancelarRegistro() {
     document.getElementById('registros').classList.remove('active');
     document.getElementById('opciones').classList.remove('hidden');
     document.getElementById('tituloPrincipal').classList.remove('hidden');
-    document.getElementById('resumenTitulo').classList.remove('hidden');  // Mostrar el título
+    document.getElementById('resumenTitulo').classList.remove('hidden');  // Mostrar el tÃ­tulo
 }
 function mostrarMensaje(opcion, mensaje) {
     document.getElementById(`mensaje${capitalize(opcion)}`).innerText = mensaje;
@@ -91,7 +97,7 @@ function mostrarTodosRegistros() {
     document.getElementById('registros').classList.add('active');
     document.getElementById('opciones').classList.add('hidden');
     document.getElementById('tituloPrincipal').classList.add('hidden');
-    document.getElementById('resumenTitulo').classList.add('hidden');  // Ocultar el título
+    document.getElementById('resumenTitulo').classList.add('hidden');  // Ocultar el tÃ­tulo
 }
 function mostrarRegistros() {
     const entregaRegistros = JSON.parse(localStorage.getItem('entrega')) || [];
@@ -124,8 +130,6 @@ function mostrarRegistros() {
                     <p><strong>Fecha y Hora:</strong> ${entrega.fechaHora}</p>
                     <p><strong>Fecha del Registro:</strong> ${entrega.fechaRegistro}</p>
                     <p><strong>Tiempo Total:</strong> ${entrega.tiempoTotal}</p>
-                    <button onclick="editarRegistro('entrega', ${entrega.id})">Editar</button>
-                    <button onclick="eliminarRegistro('entrega', ${entrega.id})">Eliminar</button>
                 </div>`;
         }
     });
@@ -142,8 +146,6 @@ function mostrarRegistros() {
                     <p><strong>Tiempo Total:</strong> ${finalizado.tiempoTotal}</p>
                     <p><strong>Estatus:</strong> ${finalizado.estatus}</p>
                     <p><strong>Observaciones:</strong> ${finalizado.observaciones}</p>
-                    <button onclick="editarRegistro('finalizado', ${finalizado.id})">Editar</button>
-                    <button onclick="eliminarRegistro('finalizado', ${finalizado.id})">Eliminar</button>
                 </div>`;
         }
     });
@@ -173,50 +175,11 @@ function buscarPorPedido() {
                     listaHTML += `<p><strong>Vinculado con Entrega ID:</strong> ${registro.vinculadoConEntrega}</p>`;
                 }
             }
-            listaHTML += `<button onclick="editarRegistro('${tipo}', ${registro.id})">Editar</button>
-                          <button onclick="eliminarRegistro('${tipo}', ${registro.id})">Eliminar</button>
-                          </div>`;
+            listaHTML += `</div>`;
         });
     });
 
     document.getElementById('listaRegistros').innerHTML = listaHTML;
-}
-function guardarCambios(tipo) {
-    const form = document.getElementById(formIds[tipo]);
-    const id = form.getAttribute('data-editing-id');
-    if (!id) return;
-
-    const nombre = form.querySelector('select[id^="nombre"]').value;
-    const pedido = form.querySelector('input[id^="pedido"]').value;
-    const fechaHora = form.querySelector('input[type="datetime-local"]').value;
-
-    // Verificar formato del pedido
-    if (!/^(GDL\d{6})$/.test(pedido)) {
-        mostrarMensaje(tipo, 'El código de pedido debe comenzar con "GDL" seguido de 6 dígitos.');
-        return;
-    }
-
-    const registros = JSON.parse(localStorage.getItem(tipo)) || [];
-    const index = registros.findIndex(r => r.id == id);
-    if (index === -1) return;
-
-    registros[index].nombre = nombre;
-    registros[index].pedido = pedido;
-    registros[index].fechaHora = new Date(fechaHora).toISOString(); // Asegurar que se guarde como ISO string
-    registros[index].fechaRegistro = new Date().toISOString();
-
-    if (tipo === 'finalizado') {
-        registros[index].estatus = document.getElementById('estatus').value;
-        registros[index].observaciones = document.getElementById('observaciones').value;
-    }
-
-    localStorage.setItem(tipo, JSON.stringify(registros));
-
-    form.removeAttribute('data-editing-id');
-    form.reset();
-    mostrarMensaje(tipo, 'El registro se actualizó exitosamente.');
-    actualizarTablaRegistros();
-    cancelarRegistro();
 }
 function calcularTiempoTotal(fechaInicio, fechaFin) {
     const diff = fechaFin - fechaInicio;
@@ -225,7 +188,6 @@ function calcularTiempoTotal(fechaInicio, fechaFin) {
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     return `${hours} horas y ${minutes} minutos`;
 }
-
 function calcularTiempoTotalEnHorasYMinutos(fechaInicio, fechaFin) {
     const diff = fechaFin - fechaInicio;
     if (isNaN(diff)) return { horas: 0, minutos: 0 };
@@ -304,7 +266,6 @@ function exportarRegistros() {
 
     XLSX.writeFile(wb, nombreArchivo);
 }
-
 function formatDate(date) {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -368,7 +329,7 @@ function actualizarTablaRegistros() {
 }
 window.onload = function() {
     setInterval(actualizarReloj, 1000);
-    actualizarTablaRegistros();  // Llamar a la función al cargar la página
+    actualizarTablaRegistros();  // Llamar a la funciÃ³n al cargar la pÃ¡gina
 };
 function calcularTiempoTotal(fechaInicio, fechaFin) {
     const diff = fechaFin - fechaInicio;
