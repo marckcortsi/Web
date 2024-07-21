@@ -8,14 +8,16 @@ const formIds = {
     entrega: 'formEntrega',
     finalizado: 'formFinalizado'
 };
+
 function mostrarFormulario(opcion) {
     document.querySelectorAll('.registro-form').forEach(form => form.classList.remove('active'));
     document.getElementById('registros').classList.remove('active');
     document.getElementById('opciones').classList.add('hidden');
     document.getElementById('tituloPrincipal').classList.add('hidden');
     document.getElementById(`registro${capitalize(opcion)}`).classList.add('active');
-    document.getElementById('resumenTitulo').classList.add('hidden');  // Ocultar el tÃ­tulo
+    document.getElementById('resumenTitulo').classList.add('hidden');  // Ocultar el título
 }
+
 function registrar(opcion) {
     const form = document.getElementById(formIds[opcion]);
     const nombre = form.querySelector('select[id^="nombre"]').value;
@@ -25,7 +27,7 @@ function registrar(opcion) {
 
     // Verificar formato del pedido
     if (!/^(GDL\d{6})$/.test(pedido)) {
-        mostrarMensaje(opcion, 'El cÃ³digo de pedido debe comenzar con "GDL" seguido de 6 dÃ­gitos.');
+        mostrarMensaje(opcion, 'El codigo de pedido debe comenzar con "GDL" seguido de 6 digitos.');
         return;
     }
 
@@ -61,30 +63,35 @@ function registrar(opcion) {
     localStorage.setItem(opcion, JSON.stringify(registros));
 
     form.reset();
-    mostrarMensaje(opcion, 'El registro se realizÃ³ exitosamente.');
-    actualizarTablaRegistros();  // Llamar a la funciÃ³n despuÃ©s de registrar un nuevo pedido
+    mostrarMensaje(opcion, 'El registro se realizo exitosamente.');
+    actualizarTablaRegistros();  // Llamar a la función después de registrar un nuevo pedido
 }
+
 function verificarDuplicado(opcion, pedido) {
     let registros = JSON.parse(localStorage.getItem(opcion)) || [];
     return registros.some(registro => registro.pedido.toUpperCase() === pedido.toUpperCase());
 }
+
 function mostrarAlerta(opcion) {
     const mensaje = opcion === 'entrega'
-        ? "ADVERTENCIA: EL PEDIDO QUE ESTÃ INGRESANDO YA HA SIDO REGISTRADO ANTERIORMENTE. POR FAVOR, VALIDAR QUE EL PEDIDO NO HAYA SIDO SURTIDO DOS VECES."
+        ? "ADVERTENCIA: EL PEDIDO QUE ESTÁ INGRESANDO YA HA SIDO REGISTRADO ANTERIORMENTE. POR FAVOR, VALIDAR QUE EL PEDIDO NO HAYA SIDO SURTIDO DOS VECES."
         : "ADVERTENCIA: EL PEDIDO YA HA SIDO REGISTRADO ANTERIORMENTE. POR FAVOR, VALIDAR NUEVAMENTE EL PEDIDO.";
     document.getElementById('alertaMensaje').innerText = mensaje;
     document.getElementById('alertaDuplicado').classList.add('active');
 }
+
 function cerrarAlerta() {
     document.getElementById('alertaDuplicado').classList.remove('active');
 }
+
 function cancelarRegistro() {
     document.querySelectorAll('.registro-form').forEach(form => form.classList.remove('active'));
     document.getElementById('registros').classList.remove('active');
     document.getElementById('opciones').classList.remove('hidden');
     document.getElementById('tituloPrincipal').classList.remove('hidden');
-    document.getElementById('resumenTitulo').classList.remove('hidden');  // Mostrar el tÃ­tulo
+    document.getElementById('resumenTitulo').classList.remove('hidden');  // Mostrar el título
 }
+
 function mostrarMensaje(opcion, mensaje) {
     document.getElementById(`mensaje${capitalize(opcion)}`).innerText = mensaje;
     setTimeout(() => {
@@ -92,13 +99,15 @@ function mostrarMensaje(opcion, mensaje) {
         cancelarRegistro();
     }, 3000);
 }
+
 function mostrarTodosRegistros() {
     mostrarRegistros();
     document.getElementById('registros').classList.add('active');
     document.getElementById('opciones').classList.add('hidden');
     document.getElementById('tituloPrincipal').classList.add('hidden');
-    document.getElementById('resumenTitulo').classList.add('hidden');  // Ocultar el tÃ­tulo
+    document.getElementById('resumenTitulo').classList.add('hidden');  // Ocultar el título
 }
+
 function mostrarRegistros() {
     const entregaRegistros = JSON.parse(localStorage.getItem('entrega')) || [];
     const finalizadoRegistros = JSON.parse(localStorage.getItem('finalizado')) || [];
@@ -127,8 +136,8 @@ function mostrarRegistros() {
                 <div class="registro entrega" data-id="${entrega.id}">
                     <p><strong>Pedido:</strong> ${entrega.pedido}</p>
                     <p><strong>Surtido por:</strong> ${entrega.nombre}</p>
-                    <p><strong>Fecha y Hora:</strong> ${entrega.fechaHora}</p>
-                    <p><strong>Fecha del Registro:</strong> ${entrega.fechaRegistro}</p>
+                    <p><strong>Fecha y Hora:</strong> ${formatDateTimeCustom(new Date(entrega.fechaHora))}</p>
+                    <p><strong>Fecha del Registro:</strong> ${formatDateTimeCustom(new Date(entrega.fechaRegistro))}</p>
                     <p><strong>Tiempo Total:</strong> ${entrega.tiempoTotal}</p>
                 </div>`;
         }
@@ -141,8 +150,8 @@ function mostrarRegistros() {
                 <div class="registro finalizado" data-id="${finalizado.id}">
                     <p><strong>Pedido:</strong> ${finalizado.pedido}</p>
                     <p><strong>Empacado por:</strong> ${finalizado.nombre}</p>
-                    <p><strong>Fecha y Hora:</strong> ${finalizado.fechaHora}</p>
-                    <p><strong>Fecha del Registro:</strong> ${finalizado.fechaRegistro}</p>
+                    <p><strong>Fecha y Hora:</strong> ${formatDateTimeCustom(new Date(finalizado.fechaHora))}</p>
+                    <p><strong>Fecha del Registro:</strong> ${formatDateTimeCustom(new Date(finalizado.fechaRegistro))}</p>
                     <p><strong>Tiempo Total:</strong> ${finalizado.tiempoTotal}</p>
                     <p><strong>Estatus:</strong> ${finalizado.estatus}</p>
                     <p><strong>Observaciones:</strong> ${finalizado.observaciones}</p>
@@ -152,6 +161,7 @@ function mostrarRegistros() {
 
     document.getElementById('listaRegistros').innerHTML = listaHTML;
 }
+
 function buscarPorPedido() {
     const pedidoBusqueda = document.getElementById('pedidoBusqueda').value.trim().toUpperCase();
     if (!pedidoBusqueda) return;
@@ -165,8 +175,8 @@ function buscarPorPedido() {
             listaHTML += `<div class="registro ${tipo}" data-id="${registro.id}">
                             <p><strong>Nombre:</strong> ${registro.nombre}</p>
                             <p><strong>GDL:</strong> ${registro.pedido}</p>
-                            <p><strong>Fecha y Hora:</strong> ${registro.fechaHora}</p>
-                            <p><strong>Fecha del Registro:</strong> ${registro.fechaRegistro}</p>
+                            <p><strong>Fecha y Hora:</strong> ${formatDateTimeCustom(new Date(registro.fechaHora))}</p>
+                            <p><strong>Fecha del Registro:</strong> ${formatDateTimeCustom(new Date(registro.fechaRegistro))}</p>
                             <p><strong>Tiempo Total:</strong> ${registro.tiempoTotal}</p>`;
             if (tipo === 'finalizado') {
                 listaHTML += `<p><strong>Estatus:</strong> ${registro.estatus}</p>
@@ -181,6 +191,7 @@ function buscarPorPedido() {
 
     document.getElementById('listaRegistros').innerHTML = listaHTML;
 }
+
 function calcularTiempoTotal(fechaInicio, fechaFin) {
     const diff = fechaFin - fechaInicio;
     if (isNaN(diff)) return '0 horas y 0 minutos';
@@ -188,6 +199,7 @@ function calcularTiempoTotal(fechaInicio, fechaFin) {
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     return `${hours} horas y ${minutes} minutos`;
 }
+
 function calcularTiempoTotalEnHorasYMinutos(fechaInicio, fechaFin) {
     const diff = fechaFin - fechaInicio;
     if (isNaN(diff)) return { horas: 0, minutos: 0 };
@@ -195,6 +207,7 @@ function calcularTiempoTotalEnHorasYMinutos(fechaInicio, fechaFin) {
     const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     return { horas, minutos };
 }
+
 function formatDateTime(date) {
     return new Intl.DateTimeFormat('es-ES', {
         day: '2-digit',
@@ -206,9 +219,11 @@ function formatDateTime(date) {
         hour12: true
     }).format(date);
 }
+
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
 function exportarRegistros() {
     const entregaRegistros = JSON.parse(localStorage.getItem('entrega')) || [];
     const finalizadoRegistros = JSON.parse(localStorage.getItem('finalizado')) || [];
@@ -229,11 +244,11 @@ function exportarRegistros() {
             entrega.nombre,
             tiempoSurtido.horas,
             tiempoSurtido.minutos,
-            entrega.fechaRegistro,
+            formatDateTimeCustom(new Date(entrega.fechaRegistro)),
             finalizado ? finalizado.nombre : '',
             tiempoEmpaque.horas,
             tiempoEmpaque.minutos,
-            finalizado ? finalizado.fechaRegistro : '',
+            finalizado ? formatDateTimeCustom(new Date(finalizado.fechaRegistro)) : '',
             finalizado ? finalizado.estatus : '',
             finalizado ? finalizado.observaciones : '',
             tiempoTotalProceso.horas,
@@ -266,12 +281,14 @@ function exportarRegistros() {
 
     XLSX.writeFile(wb, nombreArchivo);
 }
+
 function formatDate(date) {
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
 }
+
 function volverAlPrincipal() {
     document.getElementById('registros').classList.remove('active');
     document.getElementById('listaRegistros').innerHTML = '';
@@ -279,6 +296,7 @@ function volverAlPrincipal() {
     document.getElementById('tituloPrincipal').classList.remove('hidden');
     document.getElementById('resumenTitulo').classList.remove('hidden');
 }
+
 function actualizarReloj() {
     const now = new Date();
     const horas = now.getHours() % 12 || 12;
@@ -287,6 +305,7 @@ function actualizarReloj() {
     const ampm = now.getHours() >= 12 ? 'PM' : 'AM';
     document.getElementById('reloj').innerText = `${horas}:${minutos}:${segundos} ${ampm}`;
 }
+
 function actualizarTablaRegistros() {
     const entregaRegistros = JSON.parse(localStorage.getItem('entrega')) || [];
     const finalizadoRegistros = JSON.parse(localStorage.getItem('finalizado')) || [];
@@ -327,28 +346,13 @@ function actualizarTablaRegistros() {
     document.querySelector('#tablaSurtido tbody').innerHTML = crearFilasTabla(registrosSurtido);
     document.querySelector('#tablaEmpaque tbody').innerHTML = crearFilasTabla(registrosEmpaque);
 }
+
 window.onload = function() {
     setInterval(actualizarReloj, 1000);
-    actualizarTablaRegistros();  // Llamar a la funciÃ³n al cargar la pÃ¡gina
+    actualizarTablaRegistros();  // Llamar a la función al cargar la página
 };
-function calcularTiempoTotal(fechaInicio, fechaFin) {
-    const diff = fechaFin - fechaInicio;
-    if (isNaN(diff)) return '0 horas y 0 minutos';
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    return `${hours} horas y ${minutes} minutos`;
-}
-function formatDateTime(date) {
-    return new Intl.DateTimeFormat('es-ES', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: true
-    }).format(date);
-}
-function capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+
+function formatDateTimeCustom(date) {
+    const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true };
+    return new Intl.DateTimeFormat('es-ES', options).format(date);
 }
