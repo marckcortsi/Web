@@ -3,122 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>REGISTRO DE PEDIDOS</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <title>Registro de Camionetas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #0056b3;
+        }
+        button {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: #0056b3;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #003d82;
+        }
+        #registroForm, #consultaForm {
+            display: none;
+            margin-top: 20px;
+        }
+        .back-button {
+            display: inline-block;
+            margin-top: 10px;
+            background-color: #bbb;
+        }
+        select, input {
+            width: 90%;
+            padding: 8px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+        #historialContainer {
+            margin-top: 20px;
+            text-align: left;
+        }
+        #cameraPreview {
+            width: 100%;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <div id="reloj-container">
-        <div id="reloj"></div>
-    </div>
-    <h1 id="tituloPrincipal">REGISTRO DE PEDIDOS</h1>
-    <div id="opciones" class="opciones">
-        <button onclick="mostrarFormulario('entrega')">SURTIDO</button>
-        <button onclick="mostrarFormulario('finalizado')">EMPAQUE</button>
-        <button onclick="mostrarTodosRegistros()">REGISTROS</button>
-    </div>
-    <div id="registroEntrega" class="registro-form">
-        <h2>ENTREGA DE PEDIDOS A EMPAQUE</h2>
-        <form id="formEntrega">
-            <label for="nombreEntrega">SELECCIONE USUARIO:</label>
-            <select id="nombreEntrega" required>
-                <option value="">SELECCIONE UN USUARIO</option>
-                <option value="ISAC">ISAC</option>
-                <option value="RAFAEL">RAFAEL</option>
-                <option value="ALEJANDRO">ALEJANDRO</option>
-                <option value="CARLOS">CARLOS</option>
-                <option value="ISRRAEL">ISRRAEL</option>
-                <option value="ARTURO">ARTURO</option>
+    <div class="container">
+        <h1>Registro de Camionetas</h1>
+        
+        <div id="mainMenu">
+            <button onclick="mostrarRegistro('verificacion')">Registrar Verificación</button>
+            <button onclick="mostrarRegistro('mantenimiento')">Registrar Mantenimiento</button>
+            <button onclick="mostrarConsulta()">Consultar Registros de Unidad</button>
+        </div>
+
+        <div id="registroForm">
+            <h2 id="registroTitulo">Registrar</h2>
+            <label for="unidad">Seleccionar Unidad:</label>
+            <select id="unidad">
+                <option value="unidad1">Unidad 1</option>
+                <option value="unidad2">Unidad 2</option>
+                <option value="unidad3">Unidad 3</option>
             </select>
-            <label for="pedidoEntrega">GDL:</label>
-            <input type="text" id="pedidoEntrega" required>
-            <label for="fechaHoraImpresion">FECHA Y HORA DE IMPRESIÓN DE DOCUMENTO:</label>
-            <input type="datetime-local" id="fechaHoraImpresion" required>
-            <button type="button" onclick="registrar('entrega')">REGISTRAR ENTREGA</button>
-            <button type="button" class="cancelar" onclick="cancelarRegistro()">CANCELAR</button>
-        </form>
-        <p id="mensajeEntrega" class="message"></p>
-    </div>
-    <div id="registroFinalizado" class="registro-form">
-        <h2>REGISTRO DE EMPAQUE</h2>
-        <form id="formFinalizado">
-            <label for="nombreFinalizado">SELECCIONE USUARIO:</label>
-            <select id="nombreFinalizado" required>
-                <option value="">SELECCIONE UN USUARIO</option>
-                <option value="EDGAR">EDGAR</option>
-                <option value="MARCOS">MARCOS</option>
-                <option value="IRVIN">IRVIN</option>
-                <option value="KAREN">KAREN</option>
-                <option value="FRANCISCO">FRANCISCO</option>
-            </select>
-            <label for="pedidoFinalizado">GDL:</label>
-            <input type="text" id="pedidoFinalizado" required>
-            <label for="fechaHoraInicioEmpaque">FECHA Y HORA DE INICIO DE EMPAQUE:</label>
-            <input type="datetime-local" id="fechaHoraInicioEmpaque" required>
-            <label for="estatus">ESTATUS:</label>
-            <select id="estatus" required>
-                <option value="COMPLETO">COMPLETO</option>
-                <option value="INCIDENCIA">INCIDENCIA</option>
-            </select>
-            <textarea id="observaciones" placeholder="OBSERVACIONES (SI APLICA)"></textarea>
-            <button type="button" onclick="registrar('finalizado')">FINALIZAR</button>
-            <button type="button" class="cancelar" onclick="cancelarRegistro()">CANCELAR</button>
-        </form>
-        <p id="mensajeFinalizado" class="message"></p>
-    </div>
-    <div id="registros" class="registros">
-        <h2>REGISTROS REALIZADOS</h2>
-        <div id="busquedaPedidoContainer">
-            <label for="pedidoBusqueda">BUSCAR POR PEDIDO (GDL):</label>
-            <input type="text" id="pedidoBusqueda">
-            <div>
-                <button onclick="buscarPorPedido()">APLICAR FILTRO</button>
-                <button class="borrar-filtro" onclick="borrarFiltro()">BORRAR FILTRO</button>
+
+            <div id="mantenimientoFields">
+                <label for="tipoMantenimiento">Tipo de Mantenimiento:</label>
+                <input type="text" id="tipoMantenimiento" placeholder="Escribe el tipo de mantenimiento">
             </div>
-            <button onclick="exportarRegistros()">EXPORTAR REGISTROS</button>
-            <button class="regresar" onclick="volverAlPrincipal()">REGRESAR</button>
+
+            <button onclick="solicitarCamara()">Activar Cámara</button>
+            <video id="cameraPreview" autoplay playsinline></video>
+            <button onclick="capturarFoto()">Capturar Foto</button>
+            <button onclick="guardarRegistro()">Guardar Registro</button>
+            <button class="back-button" onclick="mostrarMenuPrincipal()">Volver al Menú Principal</button>
         </div>
-        <div id="listaRegistros"></div>
-    </div>
-    <div id="tablaRegistros">
-        <h2 id="resumenTitulo">Resumen de Registros por Usuario</h2>
-        <div>
-            <h3>Surtido</h3>
-            <table id="tablaSurtido">
-                <thead>
-                    <tr>
-                        <th>Usuario</th>
-                        <th>Registros</th>
-                        <th>Tiempo Promedio</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Filas generadas dinámicamente -->
-                </tbody>
-            </table>
-        </div>
-        <div>
-            <h3>Empaque</h3>
-            <table id="tablaEmpaque">
-                <thead>
-                    <tr>
-                        <th>Usuario</th>
-                        <th>Registros</th>
-                        <th>Tiempo Promedio</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Filas generadas dinámicamente -->
-                </tbody>
-            </table>
+
+        <div id="consultaForm">
+            <h2>Consultar Historial de Unidad</h2>
+            <label for="unidadConsulta">Seleccionar Unidad:</label>
+            <select id="unidadConsulta">
+                <option value="unidad1">Unidad 1</option>
+                <option value="unidad2">Unidad 2</option>
+                <option value="unidad3">Unidad 3</option>
+            </select>
+            <button onclick="mostrarHistorial()">Ver Historial</button>
+            <div id="historialContainer"></div>
+            <button class="back-button" onclick="mostrarMenuPrincipal()">Volver al Menú Principal</button>
         </div>
     </div>
-    <div id="alertaDuplicado" class="alerta">
-        <div class="alerta-content">
-            <p id="alertaMensaje"></p>
-            <button onclick="cerrarAlerta()">ACEPTAR</button>
-        </div>
-    </div>
-    <script src="script.js"></script>
+
+    <script src="app.js"></script>
 </body>
 </html>
